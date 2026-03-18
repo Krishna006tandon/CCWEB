@@ -210,3 +210,231 @@ exports.sendCertificateEmail = async ({ studentName, studentEmail, className, ce
     html: htmlContent,
   });
 };
+
+/**
+ * Send catering order confirmation email
+ */
+exports.sendCateringConfirmation = async (order) => {
+  const transporter = createTransporter();
+
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8" />
+      <style>
+        body { font-family: 'Georgia', serif; background: #FAF7F4; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 40px auto; background: #fff; border-radius: 24px; overflow: hidden; box-shadow: 0 4px 40px rgba(107,79,58,0.08); }
+        .header { background: #D4A574; padding: 40px; text-align: center; }
+        .header h1 { color: #fff; margin: 0; font-size: 28px; letter-spacing: 2px; }
+        .header p  { color: rgba(255,255,255,0.8); margin: 8px 0 0; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; }
+        .body { padding: 40px; }
+        .greeting { font-size: 18px; color: #6B4F3A; margin-bottom: 8px; }
+        .sub { color: #8B7355; font-size: 14px; margin-bottom: 32px; }
+        .order-box { background: #FAF7F4; border-radius: 16px; padding: 28px; margin-bottom: 28px; }
+        .order-title { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: #8B7355; margin-bottom: 20px; font-weight: bold; }
+        .row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #F1EDE9; }
+        .row:last-child { border-bottom: none; }
+        .key   { color: #8B7355; font-size: 13px; }
+        .value { color: #6B4F3A; font-size: 13px; font-weight: bold; }
+        .total-row { background: #D4A574; border-radius: 12px; padding: 16px 20px; display: flex; justify-content: space-between; margin-top: 20px; }
+        .total-key   { color: rgba(255,255,255,0.9); font-size: 13px; }
+        .total-value { color: #fff; font-size: 18px; font-weight: bold; }
+        .badge { display: inline-block; background: #D4A57420; color: #8B6F47; padding: 6px 18px; border-radius: 50px; font-size: 11px; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 24px; border: 1px solid #D4A57440; }
+        .footer { background: #FAF7F4; padding: 28px 40px; text-align: center; }
+        .footer p { color: #8B7355; font-size: 12px; margin: 0; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>🍽️ Catering Service</h1>
+          <p>Order Confirmation</p>
+        </div>
+        <div class="body">
+          <span class="badge">✓ Order Received</span>
+          <p class="greeting">Dear ${order.customerId.name},</p>
+          <p class="sub">Thank you for choosing our catering service! Your order has been received and is being processed.</p>
+
+          <div class="order-box">
+            <p class="order-title">Order Details</p>
+            <div class="row">
+              <span class="key">Order Number</span>
+              <span class="value">${order.orderNumber}</span>
+            </div>
+            <div class="row">
+              <span class="key">Event Type</span>
+              <span class="value">${order.eventType}</span>
+            </div>
+            <div class="row">
+              <span class="key">Event Date</span>
+              <span class="value">${new Date(order.eventDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' })}</span>
+            </div>
+            <div class="row">
+              <span class="key">Event Time</span>
+              <span class="value">${order.eventTime}</span>
+            </div>
+            <div class="row">
+              <span class="key">Number of Guests</span>
+              <span class="value">${order.guestCount}</span>
+            </div>
+            <div class="row">
+              <span class="key">Venue</span>
+              <span class="value">${order.venue.name}</span>
+            </div>
+            <div class="row">
+              <span class="key">Serving Style</span>
+              <span class="value">${order.servingStyle}</span>
+            </div>
+            <div class="total-row">
+              <span class="total-key">Total Amount</span>
+              <span class="total-value">₹${order.pricing.totalAmount}</span>
+            </div>
+            <div class="row" style="margin-top: 12px;">
+              <span class="key">Advance Payment Required</span>
+              <span class="value" style="color: #D4A574;">₹${order.pricing.advanceAmount} (50%)</span>
+            </div>
+          </div>
+
+          <p style="color: #8B7355; font-size: 13px;">
+            Please complete the advance payment to confirm your order. You will receive a payment link shortly.
+            For any queries, please reply to this email or call us at the venue number provided.
+          </p>
+        </div>
+        <div class="footer">
+          <p>© ${new Date().getFullYear()} Cookery Classes Catering. All rights reserved.</p>
+          <p style="margin-top: 6px;">This is an auto-generated confirmation. Please keep it for your records.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  await transporter.sendMail({
+    from: `"Cookery Classes Catering" <${process.env.EMAIL_USER}>`,
+    to: order.customerId.email,
+    subject: `🍽️ Catering Order Confirmed — ${order.orderNumber}`,
+    html: htmlContent,
+  });
+};
+
+/**
+ * Send catering order update email
+ */
+exports.sendCateringUpdate = async (order, updateType) => {
+  const transporter = createTransporter();
+
+  let subject, headerText, badgeText, badgeColor;
+
+  switch (updateType) {
+    case 'payment_confirmed':
+      subject = `💳 Payment Confirmed — ${order.orderNumber}`;
+      headerText = 'Payment Confirmed';
+      badgeText = '✓ Advance Payment Received';
+      badgeColor = '#8FBF9F';
+      break;
+    case 'status_update':
+      subject = `📋 Order Update — ${order.orderNumber}`;
+      headerText = 'Order Status Update';
+      badgeText = `Status: ${order.status}`;
+      badgeColor = '#D4A574';
+      break;
+    case 'cancelled':
+      subject = `❌ Order Cancelled — ${order.orderNumber}`;
+      headerText = 'Order Cancelled';
+      badgeText = 'Order Cancelled';
+      badgeColor = '#E74C3C';
+      break;
+    default:
+      subject = `📋 Order Update — ${order.orderNumber}`;
+      headerText = 'Order Update';
+      badgeText = 'Update';
+      badgeColor = '#D4A574';
+  }
+
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8" />
+      <style>
+        body { font-family: 'Georgia', serif; background: #FAF7F4; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 40px auto; background: #fff; border-radius: 24px; overflow: hidden; box-shadow: 0 4px 40px rgba(107,79,58,0.08); }
+        .header { background: ${badgeColor}; padding: 40px; text-align: center; }
+        .header h1 { color: #fff; margin: 0; font-size: 28px; letter-spacing: 2px; }
+        .header p  { color: rgba(255,255,255,0.8); margin: 8px 0 0; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; }
+        .body { padding: 40px; }
+        .greeting { font-size: 18px; color: #6B4F3A; margin-bottom: 8px; }
+        .sub { color: #8B7355; font-size: 14px; margin-bottom: 32px; }
+        .update-box { background: #FAF7F4; border-radius: 16px; padding: 28px; margin-bottom: 28px; }
+        .timeline-item { padding: 12px 0; border-left: 3px solid ${badgeColor}; padding-left: 20px; margin-bottom: 12px; }
+        .timeline-status { font-weight: bold; color: #6B4F3A; font-size: 14px; }
+        .timeline-time { color: #8B7355; font-size: 12px; }
+        .timeline-notes { color: #8B7355; font-size: 13px; margin-top: 4px; }
+        .badge { display: inline-block; background: ${badgeColor}20; color: ${badgeColor}; padding: 6px 18px; border-radius: 50px; font-size: 11px; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 24px; border: 1px solid ${badgeColor}40; }
+        .footer { background: #FAF7F4; padding: 28px 40px; text-align: center; }
+        .footer p { color: #8B7355; font-size: 12px; margin: 0; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>🍽️ Catering Service</h1>
+          <p>${headerText}</p>
+        </div>
+        <div class="body">
+          <span class="badge">${badgeText}</span>
+          <p class="greeting">Dear ${order.customerId.name},</p>
+          <p class="sub">Your catering order has been updated. Here are the latest details:</p>
+
+          <div class="update-box">
+            <p style="margin:0; color:#8B7355; font-size:11px; text-transform:uppercase; letter-spacing:1px; margin-bottom:16px;">Order ${order.orderNumber}</p>
+            
+            ${order.timeline.slice(-3).map(item => `
+              <div class="timeline-item">
+                <div class="timeline-status">${item.status}</div>
+                <div class="timeline-time">${new Date(item.timestamp).toLocaleString('en-IN', { 
+                  day: '2-digit', 
+                  month: 'short', 
+                  year: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}</div>
+                ${item.notes ? `<div class="timeline-notes">${item.notes}</div>` : ''}
+              </div>
+            `).join('')}
+          </div>
+
+          ${updateType === 'payment_confirmed' ? `
+            <p style="color: #8B7355; font-size: 13px;">
+              Your advance payment of ₹${order.pricing.advanceAmount} has been received successfully. 
+              Your order is now confirmed and our team will start preparation as per the schedule.
+            </p>
+          ` : ''}
+
+          ${updateType === 'cancelled' ? `
+            <p style="color: #8B7355; font-size: 13px;">
+              ${order.cancellationReason ? `Reason: ${order.cancellationReason}` : ''}
+              ${order.paymentStatus === 'Refunded' ? 'A refund has been initiated and will be processed within 5-7 business days.' : ''}
+            </p>
+          ` : ''}
+
+          <p style="color: #8B7355; font-size: 13px;">
+            For any queries, please reply to this email or call us at ${order.venue.contactNumber}.
+          </p>
+        </div>
+        <div class="footer">
+          <p>© ${new Date().getFullYear()} Cookery Classes Catering. All rights reserved.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  await transporter.sendMail({
+    from: `"Cookery Classes Catering" <${process.env.EMAIL_USER}>`,
+    to: order.customerId.email,
+    subject,
+    html: htmlContent,
+  });
+};

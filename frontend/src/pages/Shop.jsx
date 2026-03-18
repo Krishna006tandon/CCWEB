@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import api from '../services/api';
 
 export default function Shop() {
@@ -38,11 +37,8 @@ export default function Shop() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
           {products.map((product) => (
-            <motion.div 
+            <div 
               key={product._id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
               className="premium-card p-4 flex flex-col group bg-white/60 backdrop-blur-xl"
             >
               <div className="relative overflow-hidden rounded-2xl aspect-square mb-6">
@@ -71,7 +67,7 @@ export default function Shop() {
                   </button>
                 </div>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
 

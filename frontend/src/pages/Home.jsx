@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import api from '../services/api';
 
 export default function Home() {
@@ -35,7 +34,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className="min-h-[85vh] flex items-center justify-center relative overflow-hidden py-24">
         <div className="max-w-6xl mx-auto px-6 lg:px-8 w-full flex flex-col lg:flex-row items-center gap-16">
-          <motion.div initial={{opacity: 0, y: 30}} animate={{opacity: 1, y: 0}} transition={{duration: 0.6}} className="lg:w-[55%] xl:w-[60%] z-10 text-center lg:text-left">
+          <div className="lg:w-[55%] xl:w-[60%] z-10 text-center lg:text-left">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white shadow-soft border border-beige mb-6">
                <span className="w-2 h-2 rounded-full bg-sage animate-pulse"></span>
                <span className="text-xs font-semibold tracking-wider text-brown uppercase">New Interactive Courses</span>
@@ -55,8 +54,8 @@ export default function Home() {
                 Meet the Chefs
               </Link>
             </div>
-          </motion.div>
-          <motion.div initial={{opacity: 0, scale: 0.9}} animate={{opacity: 1, scale: 1}} transition={{duration: 0.8, delay: 0.2}} className="lg:w-[45%] xl:w-[40%] relative">
+          </div>
+          <div className="lg:w-[45%] xl:w-[40%] relative">
              <div className="w-full aspect-[4/5] rounded-[3rem] overflow-hidden shadow-2xl border-8 border-white">
                 <img src="https://images.unsplash.com/photo-1556910103-1c02745a872f?auto=format&fit=crop&q=80&w=800&h=1000" alt="Cooking Masterclass" className="w-full h-full object-cover" />
              </div>
@@ -67,7 +66,7 @@ export default function Home() {
                   <p className="text-xs text-brown/60">Updated Weekly</p>
                 </div>
              </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
@@ -90,8 +89,8 @@ export default function Home() {
                 <div key={i} className="animate-pulse bg-white/40 h-[400px] rounded-[2rem]"></div>
               ))
             ) : (
-              featuredClasses.map((cls, idx) => (
-                <motion.div initial={{opacity: 0, y: 30}} whileInView={{opacity: 1, y: 0}} viewport={{once: true}} transition={{delay: idx * 0.1}} whileHover={{y: -10}} key={cls._id} className="premium-card group flex flex-col">
+              featuredClasses.map((cls) => (
+                <div key={cls._id} className="premium-card group flex flex-col">
                   <div className="relative overflow-hidden rounded-2xl mb-6 aspect-video">
                      <img src={cls.image} alt={cls.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                      <div className="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-brown shadow-sm">
@@ -109,7 +108,7 @@ export default function Home() {
                        </Link>
                     </div>
                   </div>
-                </motion.div>
+                </div>
               ))
             )}
           </div>
@@ -130,8 +129,8 @@ export default function Home() {
                   <div key={i} className="animate-pulse bg-white/40 h-[350px] rounded-full"></div>
                ))
             ) : (
-              featuredProducts.map((p, idx) => (
-                <motion.div initial={{opacity: 0, scale: 0.95}} whileInView={{opacity: 1, scale: 1}} viewport={{once: true}} transition={{delay: idx * 0.1}} key={p._id} className="premium-card group flex flex-col items-center text-center p-8">
+              featuredProducts.map((p) => (
+                <div key={p._id} className="premium-card group flex flex-col items-center text-center p-8">
                   <div className="w-48 h-48 rounded-full overflow-hidden mb-8 shadow-inner-soft p-4 bg-beige/30">
                      <img src={p.image} alt={p.name} className="w-full h-full object-cover rounded-full mix-blend-multiply group-hover:scale-110 transition-transform duration-500" />
                   </div>
@@ -140,7 +139,7 @@ export default function Home() {
                   <Link to="/shop" className="w-full bg-transparent border border-brown text-brown hover:bg-brown hover:text-white transition-colors py-2.5 rounded-full font-medium text-sm text-center">
                     Shop Now
                   </Link>
-                </motion.div>
+                </div>
               ))
             )}
           </div>

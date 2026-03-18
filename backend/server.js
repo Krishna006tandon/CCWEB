@@ -6,6 +6,11 @@ const connectDB = require('./config/db');
 // Load env vars
 dotenv.config();
 
+// Debug: Check environment variables
+console.log('Environment check:');
+console.log('RAZORPAY_KEY:', process.env.RAZORPAY_KEY ? 'SET' : 'NOT SET');
+console.log('RAZORPAY_SECRET:', process.env.RAZORPAY_SECRET ? 'SET' : 'NOT SET');
+
 // Connect to database
 connectDB();
 
@@ -25,6 +30,7 @@ app.use('/api/notes', require('./routes/noteRoutes'));
 app.use('/api/enrollments', require('./routes/enrollmentRoutes'));
 app.use('/api/payment', require('./routes/paymentRoutes'));
 app.use('/api/certificates', require('./routes/certificateRoutes'));
+app.use('/api/catering', require('./routes/cateringRoutes'));
 
 app.get('/', (req, res) => {
   res.send('API is running...');

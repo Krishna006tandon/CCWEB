@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -208,7 +208,7 @@ export default function AdminDashboard() {
         <div className="max-w-6xl mx-auto">
            <AnimatePresence mode="wait">
               {activeTab === 'dashboard' && (
-                 <motion.div key="dash" initial={{opacity:0, y:10}} animate={{opacity:1, y:0}} exit={{opacity:0}} className="space-y-12">
+                 <div key="dash" className="space-y-12">
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
                       {[
                         {label: 'Total Students', value: totalStudents.toString(), icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z'},
@@ -266,11 +266,11 @@ export default function AdminDashboard() {
                           </div>
                        </div>
                     </div>
-                 </motion.div>
+                 </div>
               )}
 
               {activeTab === 'classes' && (
-                 <motion.div key="classes" initial={{opacity:0}} animate={{opacity:1}} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                 <div key="classes" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {classes.length === 0 && <p className="text-brown/40 col-span-3 text-center py-20">No classes yet. Click "+ Add class" to get started.</p>}
                     {classes.map(cls => (
                        <div key={cls._id} className="premium-card p-4 bg-white/60 group relative overflow-hidden">
@@ -285,11 +285,11 @@ export default function AdminDashboard() {
                           </div>
                        </div>
                     ))}
-                 </motion.div>
+                 </div>
               )}
 
               {activeTab === 'products' && (
-                 <motion.div key="products" initial={{opacity:0}} animate={{opacity:1}} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                 <div key="products" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {products.length === 0 && <p className="text-brown/40 col-span-3 text-center py-20">No products yet. Click "+ Add product" to get started.</p>}
                     {products.map(p => (
                        <div key={p._id} className="premium-card p-6 bg-white/60 group">
@@ -306,21 +306,21 @@ export default function AdminDashboard() {
                           </div>
                        </div>
                     ))}
-                 </motion.div>
+                 </div>
               )}
 
               {activeTab === 'notes' && (
-                 <motion.div key="notes" initial={{opacity:0}} animate={{opacity:1}} className="space-y-4">
+                 <div key="notes" className="space-y-4">
                     <p className="text-brown/50 text-sm mb-6 italic">Notes are linked to classes. Students can access them from their dashboard.</p>
                     <div className="bg-white/70 backdrop-blur-xl rounded-[2.5rem] p-8 border border-white shadow-soft text-center">
                       <p className="text-brown/40 text-sm">Upload notes using the "+ Add note" button above.</p>
                       <p className="text-brown/30 text-xs mt-2">PDFs and images are supported via Cloudinary.</p>
                     </div>
-                 </motion.div>
+                 </div>
               )}
 
               {activeTab === 'payments' && (
-                 <motion.div key="pay" initial={{opacity:0}} animate={{opacity:1}} className="bg-white/70 rounded-[2.5rem] overflow-hidden border border-beige shadow-soft">
+                 <div key="pay" className="bg-white/70 rounded-[2.5rem] overflow-hidden border border-beige shadow-soft">
                     <table className="w-full text-left">
                        <thead className="bg-beige/20 border-b border-beige">
                           <tr>
@@ -348,11 +348,11 @@ export default function AdminDashboard() {
                           ))}
                        </tbody>
                     </table>
-                 </motion.div>
+                 </div>
               )}
 
               {activeTab === 'certificates' && (
-                 <motion.div key="certificates" initial={{opacity:0}} animate={{opacity:1}} className="space-y-4">
+                 <div key="certificates" className="space-y-4">
                     {certificates.length === 0 && (
                        <div className="bg-white/70 rounded-[2.5rem] p-16 border border-beige shadow-soft text-center">
                           <p className="text-brown/40 text-sm">No certificates issued yet.</p>
@@ -373,7 +373,7 @@ export default function AdminDashboard() {
                           </div>
                        ))}
                     </div>
-                 </motion.div>
+                 </div>
               )}
            </AnimatePresence>
         </div>
@@ -382,11 +382,8 @@ export default function AdminDashboard() {
         <AnimatePresence>
            {isAdding && (
               <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-brown/40 backdrop-blur-sm" onClick={(e) => { if(e.target === e.currentTarget) { setIsAdding(false); resetForm(); } }}>
-                 <motion.div 
-                   initial={{ scale: 0.9, opacity: 0 }} 
-                   animate={{ scale: 1, opacity: 1 }} 
-                   exit={{ scale: 0.9, opacity: 0 }} 
-                   className="bg-white rounded-[3rem] w-full max-w-xl p-10 shadow-2xl relative max-h-[90vh] overflow-y-auto"
+                 <div 
+                   className="glass-panel w-full max-w-2xl max-h-[90vh] overflow-y-auto p-10 relative"
                  >
                     <button onClick={() => { setIsAdding(false); resetForm(); }} className="absolute top-8 right-8 text-brown/20 hover:text-brown transition-colors">
                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -444,7 +441,7 @@ export default function AdminDashboard() {
                           </div>
                        )}
 
-                       {(targetType !== 'certificate' || true) && (
+                       {targetType !== 'certificate' && (
                           <textarea 
                             required={targetType !== 'certificate'} 
                             placeholder="Description" 
@@ -469,7 +466,7 @@ export default function AdminDashboard() {
                           </button>
                        </div>
                     </form>
-                 </motion.div>
+                 </div>
               </div>
            )}
         </AnimatePresence>

@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
 
 export default function Contact() {
   const [submitted, setSubmitted] = useState(false);
@@ -46,11 +45,7 @@ export default function Contact() {
          </div>
 
          <div className="lg:w-1/2">
-            <motion.div 
-               initial={{ opacity: 0, y: 20 }}
-               animate={{ opacity: 1, y: 0 }}
-               className="glass-panel p-10 md:p-14 bg-white/70 shadow-2xl relative"
-            >
+            <div className="glass-panel p-10 md:p-14 bg-white/70 shadow-2xl relative">
                {submitted ? (
                   <div className="text-center py-20">
                      <div className="w-20 h-20 bg-sage/10 rounded-full flex items-center justify-center mx-auto mb-8">
@@ -81,7 +76,7 @@ export default function Contact() {
                      </button>
                   </form>
                )}
-            </motion.div>
+            </div>
          </div>
       </div>
     </div>

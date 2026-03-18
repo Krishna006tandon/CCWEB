@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
 import api from '../services/api';
 
 export default function Enrollment() {
@@ -27,7 +26,7 @@ export default function Enrollment() {
         } else {
           setError('Class not found');
         }
-      } catch (err) {
+      } catch {
         setError('Failed to fetch class details');
       }
     };
@@ -45,36 +44,117 @@ export default function Enrollment() {
       // 1. Create Order Backend
       const { data: order } = await api.post('/payment/create-order', { classId: classData._id });
       
-      // 2. Razorpay Options
+      console.log('📋 Order created:', order.id, 'Amount: ₹', order.amount/100);
+      
+      // Check if this is a mock payment (order ID starts with order_mock_)
+      const isMockPayment = order.id && order.id.startsWith('order_mock_');
+      
+      if (isMockPayment) {
+        // Handle mock payment directly
+        console.log('🔧 Processing mock payment');
+        
+        // Simulate payment processing delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Verify mock payment
+        try {
+          await api.post('/payment/verify', {
+            classId: classData._id,
+            razorpay_order_id: order.id,
+            razorpay_payment_id: 'pay_mock_' + Date.now(),
+            razorpay_signature: 'mock_signature'
+          });
+          
+          alert('Payment successful! Redirecting to dashboard...');
+          navigate('/dashboard');
+        } catch {
+          setError('Payment verification failed. Please contact support.');
+        }
+        return;
+      }
+      
+      // 2. Razorpay Options for real payments
       const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY || 'rzp_test_YOUR_KEY', // Should be in .env
+        key: import.meta.env.VITE_RAZORPAY_KEY || 'rzp_test_YOUR_KEY',
         amount: order.amount,
         currency: order.currency,
-        name: 'Cookery.',
-        description: `Enrollment for ${classData.title}`,
+        name: 'Cookery Academy',
+        description: `Enrollment for ${classData.title} by Cookery Academy`,
         order_id: order.id,
+        merchant_name: 'Cookery Academy', // This shows in UPI apps
+        brand_name: 'Cookery Academy', // Alternative merchant name
         handler: async (response) => {
           try {
+            console.log('💰 Payment received:', response.razorpay_payment_id);
+            setLoading(true);
+            setError('');
+            
             // 3. Verify Payment Backend
-            await api.post('/payment/verify', {
+            const verifyResponse = await api.post('/payment/verify', {
               classId: classData._id,
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature
             });
             
-            alert('Payment successful! Redirecting to dashboard...');
+            console.log('✅ Payment verified:', verifyResponse.data.message);
+            
+            // Show success message instead of alert
+            setError('');
+            alert('🎉 Payment successful! Redirecting to dashboard...');
             navigate('/dashboard');
-          } catch (err) {
-            setError('Payment verification failed. Please contact support.');
+          } catch (verifyError) {
+            console.error('❌ Payment verification failed:', verifyError);
+            setError('❌ Payment verification failed. Please contact support with payment ID: ' + response.razorpay_payment_id);
+          } finally {
+            setLoading(false);
           }
         },
         prefill: {
           name: user.name,
           email: user.email,
+          contact: '', // Optional: Add user phone number if available
         },
         theme: {
           color: '#6B4F3A',
+        },
+        modal: {
+          ondismiss: function() {
+            console.log('❌ Payment modal closed by user');
+            setError('Payment cancelled. Please try again.');
+            setLoading(false);
+          },
+          escape: true,
+          handleback: true,
+          confirm_close: true,
+          animation: 'fade',
+        },
+        notes: {
+          address: 'Cookery Academy',
+          course_name: classData.title,
+        },
+        // UPI specific options
+        upi: {
+          flow: 'collect', // or 'intent'
+          vpa: '', // Optional: Your UPI ID
+          merchant_name: 'Cooking Class', // Additional UPI merchant name
+        },
+        // Merchant branding for UPI
+        image: '', // Optional: Add your logo URL
+        brand_color: '#6B4F3A',
+        // Display options for UPI apps
+        display: {
+          blocks: {
+            banks: {
+              name: 'Popular Banks',
+              instruments: [
+                {
+                  method: 'upi',
+                  banks: ['HDFC', 'ICICI', 'SBI', 'PNB'],
+                },
+              ],
+            },
+          },
         },
       };
 
@@ -106,7 +186,11 @@ export default function Enrollment() {
         </div>
 
         {error && (
-          <div className="bg-red-50 text-red-500 p-4 rounded-2xl mb-6 text-sm font-medium border border-red-100 italic text-center">
+          <div className={`p-4 rounded-2xl mb-6 text-sm font-medium border text-center ${
+            error.includes('❌') ? 'bg-red-50 text-red-500 border-red-100' : 
+            error.includes('🎉') ? 'bg-green-50 text-green-600 border-green-100' :
+            'bg-yellow-50 text-yellow-600 border-yellow-100'
+          }`}>
             {error}
           </div>
         )}

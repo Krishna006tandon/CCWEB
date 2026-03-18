@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import api from '../services/api';
 
 export default function Login() {
@@ -36,11 +35,7 @@ export default function Login() {
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-peach/10 rounded-full blur-[120px] -z-10"></div>
       <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-sage/10 rounded-full blur-[100px] -z-10"></div>
       
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="glass-panel w-full max-w-md p-10 md:p-12"
-      >
+      <div className="glass-panel w-full max-w-md p-10 md:p-12">
         <div className="text-center mb-10">
           <h2 className="text-3xl font-bold text-brown mb-2 tracking-tight">Welcome Back</h2>
           <p className="text-brown/60 font-light">Login to your culinary journey</p>
@@ -97,7 +92,7 @@ export default function Login() {
             </Link>
           </p>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }

@@ -22,13 +22,15 @@ export function AdminRoute({ children }) {
     return <Navigate to="/login" replace />;
   }
 
+  let user;
   try {
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-    if (user.role !== 'admin') {
-      return <Navigate to="/dashboard" replace />;
-    }
+    user = JSON.parse(localStorage.getItem('user') || '{}');
   } catch {
     return <Navigate to="/login" replace />;
+  }
+  
+  if (user.role !== 'admin') {
+    return <Navigate to="/dashboard" replace />;
   }
 
   return children;

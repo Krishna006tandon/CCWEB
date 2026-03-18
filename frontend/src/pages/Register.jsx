@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import api from '../services/api';
 
 export default function Register() {
@@ -39,11 +38,7 @@ export default function Register() {
     <div className="min-h-[85vh] flex items-center justify-center py-12 px-6 relative overflow-hidden">
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-peach/10 rounded-full blur-[120px] -z-10"></div>
       
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="glass-panel w-full max-w-md p-10 md:p-12"
-      >
+      <div className="glass-panel w-full max-w-md p-10 md:p-12">
         <div className="text-center mb-10">
           <h2 className="text-3xl font-bold text-brown mb-2 tracking-tight">Create Account</h2>
           <p className="text-brown/60 font-light">Join our community of gourmet enthusiasts</p>
@@ -111,7 +106,7 @@ export default function Register() {
             </Link>
           </p>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }

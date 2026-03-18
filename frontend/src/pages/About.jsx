@@ -1,17 +1,10 @@
-import { motion } from 'framer-motion';
-
 export default function About() {
   return (
     <div className="min-h-screen pt-24 bg-cream/30 px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
         {/* Story Section */}
         <section className="flex flex-col lg:flex-row items-center gap-16 mb-32">
-          <motion.div 
-            initial={{ opacity: 0, x: -30 }} 
-            whileInView={{ opacity: 1, x: 0 }} 
-            viewport={{ once: true }}
-            className="lg:w-1/2"
-          >
+          <div className="lg:w-1/2">
             <h1 className="text-5xl font-bold text-brown mb-8 tracking-tight">Our Story</h1>
             <p className="text-xl text-brown/70 font-light leading-relaxed mb-6">
               Founded in 2026, Cookery. began with a simple mission: to bridge the gap between amateur home cooking and professional culinary artistry.
@@ -33,19 +26,14 @@ export default function About() {
                   <p className="text-xs font-bold uppercase tracking-widest text-brown/40 mt-1">Recipes</p>
                </div>
             </div>
-          </motion.div>
+          </div>
           
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }} 
-            whileInView={{ opacity: 1, scale: 1 }} 
-            viewport={{ once: true }}
-            className="lg:w-1/2 relative"
-          >
+          <div className="lg:w-1/2 relative">
              <div className="aspect-square rounded-[3rem] overflow-hidden shadow-2xl rotate-3">
                 <img src="https://images.unsplash.com/photo-1556910103-1c02745a872f?w=800" className="w-full h-full object-cover" alt="Cooking" />
              </div>
              <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-peach rounded-full blur-[100px] -z-10 opacity-30"></div>
-          </motion.div>
+          </div>
         </section>
 
         {/* Philosophy Section */}

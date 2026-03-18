@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import api from '../services/api';
 
 export default function StudentDashboard() {
@@ -101,11 +101,9 @@ export default function StudentDashboard() {
 
         <AnimatePresence mode="wait">
            {activeTab === 'classes' && (
-              <motion.div 
+              <div 
                 key="classes"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
+                className="space-y-6"
               >
                 <div className="mb-10 flex justify-between items-end">
                    <h3 className="text-xl text-brown font-bold flex items-center gap-3">
@@ -139,15 +137,13 @@ export default function StudentDashboard() {
                     </div>
                   )}
                 </div>
-              </motion.div>
+              </div>
            )}
 
            {activeTab === 'notes' && (
-              <motion.div 
+              <div 
                 key="notes"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
+                className="space-y-6"
               >
                 <div className="mb-10 flex justify-between items-end">
                    <h3 className="text-xl text-brown font-bold flex items-center gap-3">
@@ -179,16 +175,13 @@ export default function StudentDashboard() {
                       </div>
                    )}
                 </div>
-              </motion.div>
+              </div>
            )}
 
            {activeTab === 'profile' && (
-              <motion.div 
+              <div 
                 key="profile"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="max-w-2xl"
+                className="space-y-6 max-w-2xl"
               >
                 <div className="glass-panel p-10 bg-white/80">
                    <div className="flex items-center gap-8 mb-12">
@@ -217,7 +210,7 @@ export default function StudentDashboard() {
                       </div>
                    </div>
                 </div>
-              </motion.div>
+              </div>
            )}
         </AnimatePresence>
       </main>
