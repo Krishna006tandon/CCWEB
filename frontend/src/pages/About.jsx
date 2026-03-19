@@ -12,20 +12,6 @@ export default function About() {
             <p className="text-lg text-brown/60 font-light leading-relaxed mb-8">
               We believe that everyone has the potential to be a great chef. Our platform connects passionate food enthusiasts with Michelin-star experienced chefs through immersive, interactive online masterclasses.
             </p>
-            <div className="grid grid-cols-3 gap-8 pt-8 border-t border-beige">
-               <div>
-                  <p className="text-3xl font-bold text-sage">15k+</p>
-                  <p className="text-xs font-bold uppercase tracking-widest text-brown/40 mt-1">Students</p>
-               </div>
-               <div>
-                  <p className="text-3xl font-bold text-sage">50+</p>
-                  <p className="text-xs font-bold uppercase tracking-widest text-brown/40 mt-1">Chefs</p>
-               </div>
-               <div>
-                  <p className="text-3xl font-bold text-sage">200+</p>
-                  <p className="text-xs font-bold uppercase tracking-widest text-brown/40 mt-1">Recipes</p>
-               </div>
-            </div>
           </div>
           
           <div className="lg:w-1/2 relative">

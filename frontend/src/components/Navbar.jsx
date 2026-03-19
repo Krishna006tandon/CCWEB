@@ -1,4 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
+import logo from '../assets/logo.png';
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -15,9 +16,7 @@ export default function Navbar() {
     <nav className="sticky top-4 z-50 mx-4 sm:mx-8 lg:mx-auto max-w-6xl">
       <div className="glass-panel px-6 py-4 flex justify-between items-center">
         <Link to="/" className="text-2xl font-bold text-brown flex items-center gap-2">
-          <div className="w-8 h-8 bg-peach rounded-full flex items-center justify-center">
-            <span className="text-brown">P</span>
-          </div>
+          <img src={logo} alt="Poonam Cooking Classes" className="w-40 h-20 object-contain" />
           Poonam Cooking Classes
         </Link>
         <div className="flex items-center gap-6">
@@ -28,7 +27,7 @@ export default function Navbar() {
             <Link to="/contact" className="text-brown hover:text-sage transition-colors">Contact</Link>
             {user.role === 'admin' && <Link to="/admin" className="text-brown hover:text-sage transition-colors">Admin</Link>}
             {user.role === 'student' && <Link to="/dashboard" className="text-brown hover:text-sage transition-colors">Dashboard</Link>}
-            {user.role === 'student' && <Link to="/event-catering" className="text-brown hover:text-sage transition-colors">Event Catering</Link>}
+            {user.role === 'student' && <Link to="/catering-coming-soon" className="text-brown hover:text-sage transition-colors">Event Catering</Link>}
           </div>
           
           <div className="flex items-center gap-4">

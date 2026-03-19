@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import logo from '../assets/logo.png';
 
 export default function Footer() {
   return (
@@ -7,9 +8,7 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-start gap-12 mb-16">
            <div className="md:w-1/3">
               <Link to="/" className="text-2xl font-bold text-brown flex items-center gap-2 mb-6">
-                <div className="w-8 h-8 bg-peach rounded-full flex items-center justify-center">
-                  <span className="text-brown">P</span>
-                </div>
+                <img src={logo} alt="Poonam Cooking Classes" className="w-30 h-15 object-contain" />
                 Poonam Cooking Classes
               </Link>
               <p className="text-brown/70 text-sm leading-relaxed mb-6">

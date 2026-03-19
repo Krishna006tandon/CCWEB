@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
+import CateringPackages from '../components/CateringPackages';
 
 export default function EventCatering() {
   const [eventType, setEventType] = useState('');
@@ -11,6 +12,7 @@ export default function EventCatering() {
   const [servingStyle, setServingStyle] = useState('Buffet');
   const [items, setItems] = useState([]);
   const [customItem, setCustomItem] = useState({ name: '', quantity: 1, dietary: 'vegetarian' });
+  const [selectedPackage, setSelectedPackage] = useState(null);
   const [specialRequirements, setSpecialRequirements] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -46,6 +48,11 @@ export default function EventCatering() {
         guestCount: parseInt(guestCount),
         servingStyle,
         items,
+        packages: selectedPackage ? [{
+          packageId: selectedPackage._id,
+          name: selectedPackage.name,
+          quantity: 1
+        }] : [],
         specialRequirements
       };
 
@@ -80,12 +87,7 @@ export default function EventCatering() {
                   required
                 >
                   <option value="">Select Event Type</option>
-                  <option value="Wedding">Wedding</option>
-                  <option value="Birthday">Birthday</option>
-                  <option value="Anniversary">Anniversary</option>
-                  <option value="Corporate">Corporate</option>
-                  <option value="Engagement">Engagement</option>
-                  <option value="Other">Other</option>
+                  <option value="Kitty Party">Kitty Party</option>
                 </select>
               </div>
 
@@ -156,6 +158,13 @@ export default function EventCatering() {
               </div>
             </div>
 
+            {/* Catering Packages */}
+            <CateringPackages 
+              selectedPackage={selectedPackage}
+              onPackageSelect={setSelectedPackage}
+              guestCount={parseInt(guestCount) || 0}
+            />
+
             {/* Serving Style */}
             <div>
               <label className="block text-sm font-medium text-brown mb-2">Serving Style</label>
@@ -173,8 +182,16 @@ export default function EventCatering() {
 
             {/* Custom Food Items */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-brown">Your Custom Food Items 🥗</h3>
-              <p className="text-sm text-brown/60 mb-4">Add your own vegetarian food items for the event</p>
+              <h3 className="text-lg font-semibold text-brown">
+                Additional Custom Items 🥗 
+                {selectedPackage && <span className="text-sm font-normal text-brown/60"> (Optional - Add extra items to your package)</span>}
+              </h3>
+              <p className="text-sm text-brown/60 mb-4">
+                {selectedPackage 
+                  ? "Add extra vegetarian food items to complement your selected package"
+                  : "Add your own vegetarian food items for the event"
+                }
+              </p>
               
               <div className="flex gap-4 mb-4">
                 <input 

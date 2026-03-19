@@ -55,9 +55,9 @@ export default function Home() {
               </Link>
             </div>
           </div>
-          <div className="lg:w-[45%] xl:w-[40%] relative">
-             <div className="w-full aspect-[4/5] rounded-[3rem] overflow-hidden shadow-2xl border-8 border-white">
-                <img src="https://images.unsplash.com/photo-1556910103-1c02745a872f?auto=format&fit=crop&q=80&w=800&h=1000" alt="Cooking Masterclass" className="w-full h-full object-cover" />
+          <div className="lg:w-[50%] xl:w-[50%] relative">
+             <div className="w-full aspect-[5/5] rounded-[3rem] overflow-hidden shadow-4x2 border-12 border-white">
+                <img src="/logo.png" alt="Poonam Cooking Classes" className="w-full h-full object-cover" />
              </div>
              <div className="absolute -bottom-8 -left-8 bg-white p-6 rounded-3xl shadow-xl border border-beige flex items-center gap-4">
                 <div className="w-12 h-12 bg-sage/20 rounded-full flex items-center justify-center text-sage text-2xl font-bold">50+</div>
@@ -166,35 +166,6 @@ export default function Home() {
                <p className="font-bold text-peach tracking-widest uppercase text-sm">Poonam — Culinary Expert</p>
              </div>
           </div>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="py-20 mb-20 relative">
-        <div className="max-w-4xl mx-auto px-6 lg:px-8 text-center">
-            <h2 className="text-3xl font-bold text-brown mb-16 tracking-tight">What Our Students Say</h2>
-            
-            <div className="glass-panel p-12 relative overflow-visible">
-               <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-6xl text-sage opacity-50 font-serif">"</div>
-               <p className="text-2xl text-brown leading-relaxed font-light italic mb-8 relative z-10">
-                 These classes completely transformed how I cook! They're incredibly informative, beautiful to watch, and actually fun. I went from basically burning toast to making gourmet meals at home with confidence.
-               </p>
-               <div className="flex items-center justify-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-beige overflow-hidden">
-                     <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200" alt="Sarah M." className="w-full h-full object-cover" />
-                  </div>
-                  <div className="text-left">
-                     <p className="font-bold text-brown">Sarah Miller</p>
-                     <p className="text-xs text-brown/60">Enrolled in 4 classes</p>
-                  </div>
-               </div>
-            </div>
-            
-            <div className="flex justify-center gap-3 mt-10">
-               <button className="w-3 h-3 rounded-full bg-brown"></button>
-               <button className="w-3 h-3 rounded-full bg-beige hover:bg-peach transition-colors"></button>
-               <button className="w-3 h-3 rounded-full bg-beige hover:bg-peach transition-colors"></button>
-            </div>
         </div>
       </section>
     </div>

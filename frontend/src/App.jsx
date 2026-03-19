@@ -9,6 +9,7 @@ import StudentDashboard from './pages/StudentDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import Login from './pages/Login';
 import EventCatering from './pages/EventCatering';
+import CateringComingSoon from './pages/CateringComingSoon';
 import CateringOrderDetails from './pages/CateringOrderDetails';
 import Shop from './pages/Shop';
 import About from './pages/About';

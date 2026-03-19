@@ -151,77 +151,28 @@ export default function StudentDashboard() {
                 key="catering"
                 className="space-y-6"
               >
-                <div className="mb-10 flex justify-between items-end">
-                   <h3 className="text-xl text-brown font-bold flex items-center gap-3">
-                      <span className="w-2.5 h-2.5 rounded-full bg-sage inline-block"></span>
-                      My Catering Orders
-                   </h3>
-                   <Link to="/event-catering" className="bg-brown text-white hover:bg-brown/80 px-4 py-2 rounded-full font-medium text-xs transition-colors shadow-sm">
-                     New Order
-                   </Link>
-                </div>
-                
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {cateringOrders.map(order => (
-                    <div key={order._id} className="premium-card p-5 group flex flex-col relative overflow-hidden bg-white/80 backdrop-blur-xl">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="w-12 h-12 rounded-2xl bg-green/10 flex items-center justify-center text-2xl mb-4">🍽️</div>
-                        <span className={`text-xs font-bold px-3 py-1 rounded-full ${
-                          order.status === 'Pending' ? 'bg-yellow/10 text-yellow' :
-                          order.status === 'Advance Paid' ? 'bg-blue/10 text-blue' :
-                          order.status === 'Fully Paid' ? 'bg-green/10 text-green' :
-                          'bg-red/10 text-red'
-                        }`}>
-                          {order.status}
-                        </span>
-                      </div>
-                      <h4 className="text-lg font-bold text-brown mb-2">{order.eventType} Event</h4>
-                      <div className="space-y-2 text-sm text-brown/60 mb-3">
-                        <p><span className="font-semibold">Order:</span> {order.orderNumber}</p>
-                        <p><span className="font-semibold">Date:</span> {new Date(order.eventDate).toLocaleDateString()}</p>
-                        <p><span className="font-semibold">Time:</span> {order.eventTime}</p>
-                        <p><span className="font-semibold">Guests:</span> {order.guestCount}</p>
-                        <p><span className="font-semibold">Venue:</span> {order.venue?.name}</p>
-                      </div>
-                      <div className="text-xs text-brown/40 mb-4">
-                        {order.items?.slice(0, 2).map((item, i) => (
-                          <span key={i} className="inline-block mr-2">
-                            {item.isCustomItem ? '🥗' : '🍴'} {item.name} x{item.quantity}
-                          </span>
-                        ))}
-                        {order.items?.length > 2 && <span className="text-brown/30">+{order.items.length - 2} more</span>}
-                      </div>
-                      <div className="mt-auto flex items-center justify-between pt-4 border-t border-beige/60">
-                        <span className="text-lg font-bold text-sage">
-                          {order.pricing?.totalAmount ? `₹${order.pricing.totalAmount}` : 'Custom Quote'}
-                        </span>
-                        <div className="flex gap-2">
-                          {order.status === 'Confirmed' && (
-                            <Link 
-                              to={`/catering-order/${order._id}`}
-                              className="text-xs font-bold text-peach hover:text-peach/80 transition-colors bg-peach/10 px-3 py-1 rounded-full"
-                            >
-                              Pay Advance
-                            </Link>
-                          )}
-                          <Link 
-                            to={`/catering-order/${order._id}`}
-                            className="text-xs font-bold text-brown/60 hover:text-brown transition-colors"
-                          >
-                            View Details
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                  {cateringOrders.length === 0 && (
-                    <div className="col-span-full py-20 text-center glass-panel">
-                       <p className="text-brown/40 italic mb-4">You haven't placed any catering orders yet.</p>
-                       <Link to="/event-catering" className="bg-brown text-white hover:bg-brown/80 px-6 py-3 rounded-full font-medium text-sm transition-colors shadow-sm">
-                         Place Your First Order
-                       </Link>
-                    </div>
-                  )}
+                <div className="text-center py-20">
+                  <div className="w-24 h-24 bg-peach/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <span className="text-4xl">🍽️</span>
+                  </div>
+                  <h3 className="text-2xl font-bold text-brown mb-4">Catering Services</h3>
+                  <p className="text-brown/70 mb-8 max-w-md mx-auto">
+                    Our premium catering services are coming soon! Get ready for amazing event catering solutions.
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                    <Link 
+                      to="/catering-coming-soon" 
+                      className="bg-brown text-white hover:bg-brown/80 px-8 py-3 rounded-full font-medium transition-colors shadow-sm"
+                    >
+                      Learn More
+                    </Link>
+                    <Link 
+                      to="/contact" 
+                      className="bg-transparent border border-brown text-brown hover:bg-brown hover:text-white px-8 py-3 rounded-full font-medium transition-colors"
+                    >
+                      Get Notified
+                    </Link>
+                  </div>
                 </div>
               </div>
            )}
