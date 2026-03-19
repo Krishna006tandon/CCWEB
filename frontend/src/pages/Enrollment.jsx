@@ -208,7 +208,7 @@ export default function Enrollment() {
                 </div>
                 <div className="flex justify-between items-center pt-4 border-t border-beige/40">
                    <span className="text-lg font-bold text-brown">Total Amount</span>
-                   <span className="text-2xl font-bold text-sage">${classData.price}</span>
+                   <span className="text-2xl font-bold text-sage">₹{classData.price}</span>
                 </div>
              </div>
           )}

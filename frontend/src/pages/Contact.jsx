@@ -28,7 +28,7 @@ export default function Contact() {
                   </div>
                   <div>
                      <h4 className="font-bold text-brown text-lg">Email Us</h4>
-                     <p className="text-brown/50 font-medium">hello@cookery.com</p>
+                     <a href="mailto:poonamcookingclassess@gmail.com" className="text-brown/50 font-medium hover:text-sage transition-colors">poonamcookingclassess@gmail.com</a>
                   </div>
                </div>
                
@@ -38,7 +38,8 @@ export default function Contact() {
                   </div>
                   <div>
                      <h4 className="font-bold text-brown text-lg">Visit Studio</h4>
-                     <p className="text-brown/50 font-medium">123 Culinary Ave, Food District<br/>New York, NY 10001</p>
+                     <a href="https://maps.app.goo.gl/CbnU8amDfPZNSnxB7" target="_blank" rel="noopener noreferrer" className="text-brown/50 font-medium hover:text-sage transition-colors">48/7, Ujwal Nagar, Manish Nagar, Somalwada, Nagpur, Maharashtra 440025</a>
+                     <p className="text-brown/40 text-sm mt-2">Click for directions</p>
                   </div>
                </div>
             </div>

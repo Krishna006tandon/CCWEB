@@ -22,7 +22,7 @@ async function createAdmin() {
     // Create admin user
     const adminData = {
       name: 'Admin User',
-      email: 'admin@cookery.com',
+      email: 'admin@poonamcookingclasses.com',
       password: 'admin123', // Will be hashed
       role: 'admin',
       verified: true

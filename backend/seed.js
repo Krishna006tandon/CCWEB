@@ -72,7 +72,7 @@ const seedData = async () => {
     // Seed Admin
     await User.create({
       name: 'Admin User',
-      email: 'admin@cookery.com',
+      email: 'admin@poonamcookingclasses.com',
       password: 'admin123',
       role: 'admin'
     });

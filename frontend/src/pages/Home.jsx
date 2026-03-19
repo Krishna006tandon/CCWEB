@@ -102,7 +102,7 @@ export default function Home() {
                     <p className="text-sm text-brown/60 mb-6 leading-relaxed flex-grow line-clamp-2">{cls.description}</p>
                     
                     <div className="flex items-center justify-between pt-4 border-t border-beige">
-                       <span className="text-2xl font-bold text-sage">${cls.price}</span>
+                       <span className="text-2xl font-bold text-sage">₹{cls.price}</span>
                        <Link to={`/enroll/${cls._id}`} className="bg-peach/50 text-brown hover:bg-peach px-6 py-2 rounded-full font-medium text-sm transition-colors">
                          Enroll Now
                        </Link>
@@ -135,7 +135,7 @@ export default function Home() {
                      <img src={p.image} alt={p.name} className="w-full h-full object-cover rounded-full mix-blend-multiply group-hover:scale-110 transition-transform duration-500" />
                   </div>
                   <h3 className="text-xl font-bold text-brown mb-2">{p.name}</h3>
-                  <p className="text-sage font-bold text-lg mb-6">${p.price}</p>
+                  <p className="text-sage font-bold text-lg mb-6">₹{p.price}</p>
                   <Link to="/shop" className="w-full bg-transparent border border-brown text-brown hover:bg-brown hover:text-white transition-colors py-2.5 rounded-full font-medium text-sm text-center">
                     Shop Now
                   </Link>
@@ -153,17 +153,17 @@ export default function Home() {
              <div className="absolute top-0 right-0 w-64 h-64 bg-sage rounded-bl-full opacity-20 blur-3xl"></div>
              
              <div className="w-48 h-48 md:w-72 md:h-72 shrink-0 relative z-10">
-               <img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?w=600" alt="Chef Emma" className="w-full h-full object-cover rounded-full shadow-2xl border-4 border-peach border-opacity-30" />
+               <img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?w=600" alt="Chef Poonam" className="w-full h-full object-cover rounded-full shadow-2xl border-4 border-peach border-opacity-30" />
                <div className="absolute -bottom-4 -right-4 bg-sage text-white px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider shadow-lg">Lead Chef</div>
              </div>
              
              <div className="relative z-10">
-               <h2 className="text-3xl md:text-5xl font-bold mb-4 tracking-tight text-white">Meet Chef Emma</h2>
+               <h2 className="text-3xl md:text-5xl font-bold mb-4 tracking-tight text-white">Meet Chef Poonam</h2>
                <div className="w-16 h-1 bg-peach mb-8 rounded-full"></div>
                <p className="text-cream/80 text-lg leading-relaxed font-light mb-8 italic">
                  "I passionately believe that cooking should be enjoyable, simple, and shared. Through these classes, my goal is to make professional culinary techniques accessible, so you can prepare extraordinary meals at home."
                </p>
-               <p className="font-bold text-peach tracking-widest uppercase text-sm">Emma Davis — Michelin Star Experienced</p>
+               <p className="font-bold text-peach tracking-widest uppercase text-sm">Poonam — Culinary Expert</p>
              </div>
           </div>
         </div>

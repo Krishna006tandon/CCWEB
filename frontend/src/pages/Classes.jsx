@@ -63,7 +63,7 @@ export default function Classes() {
                    <p className="text-sm text-brown/60 mb-8 leading-relaxed flex-grow">{cls.description}</p>
                    
                    <div className="flex items-center justify-between pt-5 border-t border-beige/60">
-                      <span className="text-2xl font-bold text-sage">${cls.price}</span>
+                      <span className="text-2xl font-bold text-sage">₹{cls.price}</span>
                       <Link to={`/enroll/${cls._id}`} className="bg-brown text-white hover:bg-brown/80 px-6 py-2.5 rounded-full font-medium text-sm transition-colors shadow-sm">
                         Enroll Now
                       </Link>

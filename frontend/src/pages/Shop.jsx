@@ -61,7 +61,7 @@ export default function Shop() {
                 </p>
                 
                 <div className="mt-auto flex items-center justify-between pt-5 border-t border-beige/60">
-                  <span className="text-2xl font-bold text-sage">${product.price}</span>
+                  <span className="text-2xl font-bold text-sage">₹{product.price}</span>
                   <button className="bg-brown text-white hover:bg-brown/80 px-5 py-2.5 rounded-full font-medium text-xs transition-colors shadow-sm uppercase tracking-widest">
                     Add to Cart
                   </button>

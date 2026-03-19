@@ -16,9 +16,9 @@ export default function Navbar() {
       <div className="glass-panel px-6 py-4 flex justify-between items-center">
         <Link to="/" className="text-2xl font-bold text-brown flex items-center gap-2">
           <div className="w-8 h-8 bg-peach rounded-full flex items-center justify-center">
-            <span className="text-brown">C</span>
+            <span className="text-brown">P</span>
           </div>
-          Cookery.
+          Poonam Cooking Classes
         </Link>
         <div className="flex items-center gap-6">
           <div className="hidden md:flex items-center space-x-6 text-sm font-medium mr-2">

@@ -42,7 +42,7 @@ exports.createOrder = async (req, res) => {
         classId: classId,
         studentId: req.user._id,
         className: course.title,
-        merchant_name: 'Cookery Academy',
+        merchant_name: 'Poonam Cooking Classes',
         merchant_description: `Enrollment for ${course.title}`
       }
     };

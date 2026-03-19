@@ -128,7 +128,7 @@ export default function StudentDashboard() {
                       <div className="flex flex-col flex-grow">
                         <h3 className="text-lg font-bold text-brown mb-4 leading-tight">{enroll.classId?.title}</h3>
                         <div className="mt-auto flex items-center justify-between pt-4 border-t border-beige/60">
-                           <span className="text-xl font-bold text-sage">${enroll.classId?.price}</span>
+                           <span className="text-2xl font-bold text-sage">&#8377;{enroll.classId?.price}</span>
                            <button onClick={() => navigate(`/classes`)} className="bg-brown text-white hover:bg-brown/80 px-4 py-2 rounded-full font-medium text-xs transition-colors shadow-sm">
                              View Details
                            </button>
