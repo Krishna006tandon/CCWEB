@@ -44,7 +44,13 @@ exports.createOrder = async (req, res) => {
         className: course.title,
         merchant_name: 'Poonam Cooking and Baking Classes',
         merchant_description: `Enrollment for ${course.title}`
-      }
+      },
+      // Mobile UPI specific configurations
+      payment_capture: 1,
+      // Add mobile-specific options
+      method: 'upi', // Default to UPI for mobile
+      // Timeout for mobile payments
+      expire_by: Math.floor(Date.now() / 1000) + (15 * 60), // 15 minutes expiry
     };
 
     const order = await razorpay.orders.create(options);
@@ -68,7 +74,9 @@ exports.verifyPayment = async (req, res) => {
     console.log('🔍 Verifying payment:', {
       orderId: razorpay_order_id,
       paymentId: razorpay_payment_id,
-      classId
+      classId,
+      userAgent: req.get('User-Agent'),
+      isMobile: /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(req.get('User-Agent'))
     });
 
     // For mock payments, skip signature verification
@@ -84,6 +92,8 @@ exports.verifyPayment = async (req, res) => {
 
       if (razorpay_signature !== expectedSign) {
         console.log('❌ Invalid signature detected');
+        console.log('❌ Expected:', expectedSign);
+        console.log('❌ Received:', razorpay_signature);
         return res.status(400).json({ message: "Invalid signature sent!" });
       }
       console.log('✅ Signature verified successfully');
@@ -136,6 +146,11 @@ exports.verifyPayment = async (req, res) => {
     return res.status(200).json({ message: "Payment verified successfully", enrollment });
   } catch (error) {
     console.error('❌ Payment verification error:', error);
+    console.error('❌ Error details:', {
+      message: error.message,
+      stack: error.stack,
+      body: req.body
+    });
     return res.status(500).json({ message: error.message });
   }
 };

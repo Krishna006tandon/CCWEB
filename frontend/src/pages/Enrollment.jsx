@@ -78,11 +78,9 @@ export default function Enrollment() {
         key: import.meta.env.VITE_RAZORPAY_KEY || 'rzp_test_YOUR_KEY',
         amount: order.amount,
         currency: order.currency,
-        name: 'Cookery Academy',
-        description: `Enrollment for ${classData.title} by Cookery Academy`,
+        name: 'Poonam Cooking and Baking Classes',
+        description: `Enrollment for ${classData.title}`,
         order_id: order.id,
-        merchant_name: 'Cookery Academy', // This shows in UPI apps
-        brand_name: 'Cookery Academy', // Alternative merchant name
         handler: async (response) => {
           try {
             console.log('💰 Payment received:', response.razorpay_payment_id);
@@ -113,7 +111,7 @@ export default function Enrollment() {
         prefill: {
           name: user.name,
           email: user.email,
-          contact: '', // Optional: Add user phone number if available
+          contact: user.phone || '', // Add phone number if available
         },
         theme: {
           color: '#6B4F3A',
@@ -130,35 +128,78 @@ export default function Enrollment() {
           animation: 'fade',
         },
         notes: {
-          address: 'Cookery Academy',
+          address: 'Poonam Cooking and Baking Classes',
           course_name: classData.title,
+          customer_email: user.email,
         },
-        // UPI specific options
+        // UPI specific optimizations for mobile
         upi: {
-          flow: 'collect', // or 'intent'
-          vpa: '', // Optional: Your UPI ID
-          merchant_name: 'Cooking Class', // Additional UPI merchant name
+          flow: 'collect', // Better for mobile UPI apps
+          merchant_name: 'Poonam Cooking Classes', // Shows in UPI apps
         },
-        // Merchant branding for UPI
-        image: '', // Optional: Add your logo URL
+        // Merchant branding
+        image: 'https://your-domain.com/logo.png', // Optional: Add your logo
         brand_color: '#6B4F3A',
-        // Display options for UPI apps
-        display: {
-          blocks: {
-            banks: {
-              name: 'Popular Banks',
-              instruments: [
-                {
-                  method: 'upi',
-                  banks: ['HDFC', 'ICICI', 'SBI', 'PNB'],
-                },
-              ],
-            },
-          },
+        // Mobile-specific configuration
+        callback_url: `${window.location.origin}/payment-success`,
+        send_sms: true,
+        send_email: true,
+        // Mobile UPI app handling
+        retry: {
+          enabled: true,
+          max_count: 3
         },
+        // Timeout for mobile payments
+        timeout: 300, // 5 minutes timeout for mobile UPI
+        // Error handling
+        redirect: false,
       };
 
       const rzp = new window.Razorpay(options);
+      
+      // Add mobile-specific event listeners
+      rzp.on('payment.failed', function (response) {
+        console.error('❌ Payment failed:', response.error);
+        console.error('❌ Error code:', response.error.code);
+        console.error('❌ Error description:', response.error.description);
+        console.error('❌ Error source:', response.error.source);
+        console.error('❌ Error step:', response.error.step);
+        console.error('❌ Error reason:', response.error.reason);
+        
+        // Mobile-specific error messages
+        let errorMessage = 'Payment failed. ';
+        
+        if (response.error.code === 'BAD_REQUEST_ERROR') {
+          errorMessage += 'Invalid payment request. Please try again.';
+        } else if (response.error.code === 'PAYMENT_CANCELLED') {
+          errorMessage += 'Payment was cancelled. Please try again.';
+        } else if (response.error.code === 'PAYMENT_FAILED') {
+          if (response.error.reason === 'timeout') {
+            errorMessage += 'Payment timed out. Please check your UPI app and try again.';
+          } else if (response.error.reason === 'user_declined') {
+            errorMessage += 'Payment was declined. Please try again or use a different payment method.';
+          } else {
+            errorMessage += 'Transaction failed. Please try again or use a different payment method.';
+          }
+        } else if (response.error.code === 'NETWORK_ERROR') {
+          errorMessage += 'Network error. Please check your internet connection and try again.';
+        } else {
+          errorMessage += 'Please try again or contact support.';
+        }
+        
+        setError(errorMessage);
+        setLoading(false);
+      });
+      
+      rzp.on('payment.success', function (response) {
+        console.log('✅ Payment success:', response);
+      });
+      
+      // Add mobile-specific debugging
+      console.log('📱 Mobile device detected:', /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+      console.log('🌐 User Agent:', navigator.userAgent);
+      console.log('📋 Opening Razorpay with options:', options);
+      
       rzp.open();
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to initialize payment');
