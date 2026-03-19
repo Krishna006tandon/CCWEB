@@ -71,6 +71,8 @@ exports.getCateringProducts = async (req, res) => {
 // Create catering order
 exports.createCateringOrder = async (req, res) => {
   try {
+    console.log('🔍 Creating catering order with data:', req.body);
+    
     const {
       eventType,
       eventDate,
@@ -83,14 +85,17 @@ exports.createCateringOrder = async (req, res) => {
       specialRequirements
     } = req.body;
 
-    // Check if event date is at least 24 hours in advance
+    console.log('📅 Event date:', eventDate, 'Event time:', eventTime);
+    console.log('👥 Guest count:', guestCount, 'Items:', items);
+
+    // Check if event date is at least 72 hours (3 days) in advance
     const eventDateTime = new Date(`${eventDate} ${eventTime}`);
     const now = new Date();
     const hoursDiff = (eventDateTime - now) / (1000 * 60 * 60);
     
-    if (hoursDiff < 24) {
+    if (hoursDiff < 72) {
       return res.status(400).json({ 
-        message: 'Catering orders must be placed at least 24 hours in advance' 
+        message: 'Food orders must be placed at least 3 days (72 hours) in advance' 
       });
     }
 
@@ -98,18 +103,46 @@ exports.createCateringOrder = async (req, res) => {
     let orderItems = [];
     if (items && items.length > 0) {
       for (let item of items) {
-        const product = await Product.findById(item.productId);
-        if (!product || !product.isCateringItem) {
-          return res.status(400).json({ message: `Invalid catering item: ${item.name}` });
+        // Handle custom items (customer's own food items)
+        if (item.isCustomItem) {
+          // Validate that custom item is vegetarian
+          if (item.dietary && !['vegetarian', 'vegan', 'jain'].includes(item.dietary.toLowerCase())) {
+            return res.status(400).json({ 
+              message: `Only vegetarian food items are allowed. ${item.name} is not vegetarian.` 
+            });
+          }
+          
+          orderItems.push({
+            name: item.name,
+            quantity: item.quantity,
+            isCustomItem: true,
+            dietary: item.dietary || 'vegetarian',
+            customizations: item.customizations || {}
+          });
+        } else {
+          // Handle existing menu items
+          const product = await Product.findById(item.productId);
+          if (!product || !product.isCateringItem) {
+            return res.status(400).json({ message: `Invalid catering item: ${item.name}` });
+          }
+          
+          // Check if item is vegetarian (only veg items allowed)
+          if (product.dietary && product.dietary.toLowerCase().includes('non-veg')) {
+            return res.status(400).json({ 
+              message: `Only vegetarian food items are allowed. ${item.name} is non-vegetarian.` 
+            });
+          }
+          
+          orderItems.push({
+            productId: product._id,
+            name: product.name,
+            quantity: item.quantity,
+            price: product.price,
+            isCustomItem: false,
+            dietary: product.dietary || 'vegetarian',
+            customizations: item.customizations || {}
+          });
         }
-        
-        orderItems.push({
-          productId: product._id,
-          name: product.name,
-          quantity: item.quantity,
-          price: product.price,
-          customizations: item.customizations || {}
-        });
       }
     }
 
@@ -149,19 +182,25 @@ exports.createCateringOrder = async (req, res) => {
       servingStyle,
       items: orderItems,
       packages: orderPackages,
-      specialRequirements
+      specialRequirements,
+      orderNumber: `CAT${Date.now()}` // Generate order number directly
     });
 
     // Calculate total
     cateringOrder.calculateTotal();
 
     // Add initial timeline entry
-    cateringOrder.addTimelineEntry('Pending', 'Order placed successfully');
+    cateringOrder.timeline.push({
+      status: 'Pending',
+      timestamp: new Date(),
+      notes: 'Order placed successfully'
+    });
+    cateringOrder.status = 'Pending';
 
     await cateringOrder.save();
 
-    // Send confirmation email
-    await sendCateringConfirmation(cateringOrder);
+    // Send confirmation email (commented out for testing)
+    // await sendCateringConfirmation(cateringOrder);
 
     res.status(201).json(cateringOrder);
   } catch (error) {
@@ -172,11 +211,14 @@ exports.createCateringOrder = async (req, res) => {
 // Create advance payment order
 exports.createCateringPayment = async (req, res) => {
   try {
+    console.log('🔥 createCateringPayment called with params:', req.params);
+    console.log('🔥 User:', req.user ? req.user._id : 'No user');
+    
     if (!razorpay) {
       return res.status(503).json({ message: 'Payment service not available' });
     }
 
-    const { orderId } = req.params;
+    const { id: orderId } = req.params;
     
     const cateringOrder = await CateringOrder.findById(orderId)
       .populate('customerId', 'name email');
@@ -225,7 +267,7 @@ exports.verifyCateringPayment = async (req, res) => {
     }
 
     const { orderId, paymentId, signature } = req.body;
-    const { cateringOrderId } = req.params;
+    const { id: cateringOrderId } = req.params;
 
     const cateringOrder = await CateringOrder.findById(cateringOrderId);
     

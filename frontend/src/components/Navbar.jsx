@@ -28,6 +28,7 @@ export default function Navbar() {
             <Link to="/contact" className="text-brown hover:text-sage transition-colors">Contact</Link>
             {user.role === 'admin' && <Link to="/admin" className="text-brown hover:text-sage transition-colors">Admin</Link>}
             {user.role === 'student' && <Link to="/dashboard" className="text-brown hover:text-sage transition-colors">Dashboard</Link>}
+            {user.role === 'student' && <Link to="/event-catering" className="text-brown hover:text-sage transition-colors">Event Catering</Link>}
           </div>
           
           <div className="flex items-center gap-4">
@@ -39,9 +40,10 @@ export default function Navbar() {
                 Logout
               </button>
             ) : (
-              <Link to="/login" className="text-sm font-medium text-brown hover:text-sage transition-colors">
-                Login
-              </Link>
+              <>
+                <Link to="/login" className="text-sm font-medium text-brown hover:text-sage transition-colors">Login</Link>
+                <Link to="/register" className="btn-secondary text-sm !px-5 !py-2.5 whitespace-nowrap">Sign Up</Link>
+              </>
             )}
             <Link to="/classes" className="btn-secondary text-sm !px-5 !py-2.5 whitespace-nowrap">
               Enroll Now

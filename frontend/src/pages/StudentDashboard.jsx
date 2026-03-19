@@ -7,6 +7,7 @@ export default function StudentDashboard() {
   const [activeTab, setActiveTab] = useState('classes');
   const [enrollments, setEnrollments] = useState([]);
   const [notes, setNotes] = useState([]);
+  const [cateringOrders, setCateringOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -27,6 +28,10 @@ export default function StudentDashboard() {
            }
         }
         setNotes(allNotes);
+
+        // Fetch catering orders
+        const cateringRes = await api.get('/catering/orders/my');
+        setCateringOrders(cateringRes.data);
 
       } catch (error) {
         console.error('Error fetching student data:', error);
@@ -51,6 +56,7 @@ export default function StudentDashboard() {
 
   const tabs = [
     {id: 'classes', icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253', label: 'My Classes'},
+    {id: 'catering', icon: 'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z', label: 'Catering Orders'},
     {id: 'notes', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', label: 'Recipe Notes'},
     {id: 'profile', icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z', label: 'Profile'}
   ];
@@ -134,6 +140,86 @@ export default function StudentDashboard() {
                     <div className="col-span-full py-20 text-center glass-panel">
                        <p className="text-brown/40 italic">You haven't enrolled in any classes yet.</p>
                        <Link to="/classes" className="text-sage font-bold mt-4 inline-block hover:underline">Browse Classes</Link>
+                    </div>
+                  )}
+                </div>
+              </div>
+           )}
+
+           {activeTab === 'catering' && (
+              <div 
+                key="catering"
+                className="space-y-6"
+              >
+                <div className="mb-10 flex justify-between items-end">
+                   <h3 className="text-xl text-brown font-bold flex items-center gap-3">
+                      <span className="w-2.5 h-2.5 rounded-full bg-sage inline-block"></span>
+                      My Catering Orders
+                   </h3>
+                   <Link to="/event-catering" className="bg-brown text-white hover:bg-brown/80 px-4 py-2 rounded-full font-medium text-xs transition-colors shadow-sm">
+                     New Order
+                   </Link>
+                </div>
+                
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {cateringOrders.map(order => (
+                    <div key={order._id} className="premium-card p-5 group flex flex-col relative overflow-hidden bg-white/80 backdrop-blur-xl">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="w-12 h-12 rounded-2xl bg-green/10 flex items-center justify-center text-2xl mb-4">🍽️</div>
+                        <span className={`text-xs font-bold px-3 py-1 rounded-full ${
+                          order.status === 'Pending' ? 'bg-yellow/10 text-yellow' :
+                          order.status === 'Advance Paid' ? 'bg-blue/10 text-blue' :
+                          order.status === 'Fully Paid' ? 'bg-green/10 text-green' :
+                          'bg-red/10 text-red'
+                        }`}>
+                          {order.status}
+                        </span>
+                      </div>
+                      <h4 className="text-lg font-bold text-brown mb-2">{order.eventType} Event</h4>
+                      <div className="space-y-2 text-sm text-brown/60 mb-3">
+                        <p><span className="font-semibold">Order:</span> {order.orderNumber}</p>
+                        <p><span className="font-semibold">Date:</span> {new Date(order.eventDate).toLocaleDateString()}</p>
+                        <p><span className="font-semibold">Time:</span> {order.eventTime}</p>
+                        <p><span className="font-semibold">Guests:</span> {order.guestCount}</p>
+                        <p><span className="font-semibold">Venue:</span> {order.venue?.name}</p>
+                      </div>
+                      <div className="text-xs text-brown/40 mb-4">
+                        {order.items?.slice(0, 2).map((item, i) => (
+                          <span key={i} className="inline-block mr-2">
+                            {item.isCustomItem ? '🥗' : '🍴'} {item.name} x{item.quantity}
+                          </span>
+                        ))}
+                        {order.items?.length > 2 && <span className="text-brown/30">+{order.items.length - 2} more</span>}
+                      </div>
+                      <div className="mt-auto flex items-center justify-between pt-4 border-t border-beige/60">
+                        <span className="text-lg font-bold text-sage">
+                          {order.pricing?.totalAmount ? `₹${order.pricing.totalAmount}` : 'Custom Quote'}
+                        </span>
+                        <div className="flex gap-2">
+                          {order.status === 'Confirmed' && (
+                            <Link 
+                              to={`/catering-order/${order._id}`}
+                              className="text-xs font-bold text-peach hover:text-peach/80 transition-colors bg-peach/10 px-3 py-1 rounded-full"
+                            >
+                              Pay Advance
+                            </Link>
+                          )}
+                          <Link 
+                            to={`/catering-order/${order._id}`}
+                            className="text-xs font-bold text-brown/60 hover:text-brown transition-colors"
+                          >
+                            View Details
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {cateringOrders.length === 0 && (
+                    <div className="col-span-full py-20 text-center glass-panel">
+                       <p className="text-brown/40 italic mb-4">You haven't placed any catering orders yet.</p>
+                       <Link to="/event-catering" className="bg-brown text-white hover:bg-brown/80 px-6 py-3 rounded-full font-medium text-sm transition-colors shadow-sm">
+                         Place Your First Order
+                       </Link>
                     </div>
                   )}
                 </div>

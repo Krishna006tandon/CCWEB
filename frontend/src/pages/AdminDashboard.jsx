@@ -9,8 +9,19 @@ export default function AdminDashboard() {
   const [classes, setClasses] = useState([]);
   const [products, setProducts] = useState([]);
   const [certificates, setCertificates] = useState([]);
+  const [cateringOrders, setCateringOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [showOrderDetails, setShowOrderDetails] = useState(false);
+  const [showPricingModal, setShowPricingModal] = useState(false);
+  const [pricingForm, setPricingForm] = useState({
+    subtotal: 0,
+    serviceCharge: 0,
+    totalAmount: 0,
+    advanceAmount: 0,
+    remainingAmount: 0
+  });
   const navigate = useNavigate();
   
   const [isAdding, setIsAdding] = useState(false);
@@ -28,21 +39,99 @@ export default function AdminDashboard() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [enrolRes, classRes, prodRes, certRes] = await Promise.all([
+      const [enrolRes, classRes, prodRes, certRes, cateringRes] = await Promise.all([
         api.get('/enrollments'),
         api.get('/classes'),
         api.get('/products'),
         api.get('/certificates'),
+        api.get('/catering/admin/orders')
       ]);
       setEnrollments(enrolRes.data);
       setClasses(classRes.data);
       setProducts(prodRes.data);
       setCertificates(certRes.data);
+      setCateringOrders(cateringRes.data);
     } catch (err) {
       console.error('Error fetching admin data:', err);
       setError('Failed to load data. Please refresh.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Order management functions
+  const handleViewOrderDetails = (order) => {
+    setSelectedOrder(order);
+    setShowOrderDetails(true);
+  };
+
+  const handleCloseOrderDetails = () => {
+    setSelectedOrder(null);
+    setShowOrderDetails(false);
+  };
+
+  const handleSetPricing = (order) => {
+    setSelectedOrder(order);
+    setPricingForm({
+      subtotal: order.pricing?.subtotal || 0,
+      serviceCharge: order.pricing?.serviceCharge || 0,
+      totalAmount: order.pricing?.totalAmount || 0,
+      advanceAmount: order.pricing?.advanceAmount || 0,
+      remainingAmount: order.pricing?.remainingAmount || 0
+    });
+    setShowPricingModal(true);
+  };
+
+  const handlePricingChange = (field, value) => {
+    const newPricing = { ...pricingForm, [field]: parseFloat(value) || 0 };
+    
+    // Auto-calculate if subtotal changes
+    if (field === 'subtotal') {
+      newPricing.serviceCharge = newPricing.subtotal * 0.05; // 5% service charge
+      newPricing.totalAmount = newPricing.subtotal + newPricing.serviceCharge;
+      newPricing.advanceAmount = newPricing.totalAmount * 0.50;
+      newPricing.remainingAmount = newPricing.totalAmount - newPricing.advanceAmount;
+    }
+    
+    // Recalculate if total changes
+    if (field === 'totalAmount') {
+      newPricing.advanceAmount = newPricing.totalAmount * 0.50;
+      newPricing.remainingAmount = newPricing.totalAmount - newPricing.advanceAmount;
+    }
+    
+    setPricingForm(newPricing);
+  };
+
+  const handleUpdatePricing = async () => {
+    try {
+      await api.put(`/catering/admin/orders/${selectedOrder._id}/pricing`, { 
+        pricing: pricingForm 
+      });
+      
+      // Refresh orders
+      const cateringRes = await api.get('/catering/admin/orders');
+      setCateringOrders(cateringRes.data);
+      
+      // Update selected order
+      const updatedOrder = { ...selectedOrder, pricing: pricingForm };
+      setSelectedOrder(updatedOrder);
+      
+      setShowPricingModal(false);
+      alert('Pricing updated successfully!');
+    } catch (error) {
+      console.error('Error updating pricing:', error);
+      alert('Failed to update pricing');
+    }
+  };
+
+  const handleUpdateOrderStatus = async (orderId, newStatus) => {
+    try {
+      await api.put(`/catering/admin/orders/${orderId}/status`, { status: newStatus });
+      // Refresh orders
+      const cateringRes = await api.get('/catering/admin/orders');
+      setCateringOrders(cateringRes.data);
+    } catch (error) {
+      console.error('Error updating order status:', error);
     }
   };
 
@@ -140,6 +229,7 @@ export default function AdminDashboard() {
     {id: 'products',     label: 'Products',      icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4'},
     {id: 'notes',        label: 'Recipe Notes',  icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'},
     {id: 'payments',     label: 'Enrollments',   icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z'},
+    {id: 'catering',     label: 'Catering',      icon: 'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z'},
     {id: 'certificates', label: 'Certificates',  icon: 'M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z'},
   ];
 
@@ -351,6 +441,90 @@ export default function AdminDashboard() {
                  </div>
               )}
 
+              {activeTab === 'catering' && (
+                 <div key="catering" className="space-y-4">
+                    {cateringOrders.length === 0 && (
+                       <div className="bg-white/70 rounded-[2.5rem] p-16 border border-beige shadow-soft text-center">
+                          <p className="text-brown/40 text-sm">No catering orders yet.</p>
+                          <p className="text-brown/30 text-xs mt-2">Event catering orders will appear here.</p>
+                       </div>
+                    )}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                       {cateringOrders.map(order => (
+                          <div key={order._id} className="bg-white rounded-3xl p-6 border border-beige shadow-soft">
+                             <div className="flex items-center justify-between mb-4">
+                                <div className="w-12 h-12 rounded-2xl bg-green/10 flex items-center justify-center text-2xl mb-4">🍽️</div>
+                                <span className={`text-xs font-bold px-3 py-1 rounded-full ${
+                                  order.status === 'Pending' ? 'bg-yellow/10 text-yellow' :
+                                  order.status === 'Confirmed' ? 'bg-green/10 text-green' :
+                                  order.status === 'Completed' ? 'bg-blue/10 text-blue' :
+                                  'bg-red/10 text-red'
+                                }`}>
+                                  {order.status}
+                                </span>
+                             </div>
+                             <h4 className="font-bold text-brown mb-2">{order.eventType} Event</h4>
+                             <p className="text-xs text-brown/50 mb-1">
+                                <span className="font-bold">Customer:</span> {order.customerId?.name}
+                             </p>
+                             <p className="text-xs text-brown/50 mb-1">
+                                <span className="font-bold">Date:</span> {new Date(order.eventDate).toLocaleDateString()}
+                             </p>
+                             <p className="text-xs text-brown/50 mb-1">
+                                <span className="font-bold">Time:</span> {order.eventTime}
+                             </p>
+                             <p className="text-xs text-brown/50 mb-1">
+                                <span className="font-bold">Guests:</span> {order.guestCount}
+                             </p>
+                             <p className="text-xs text-brown/50 mb-1">
+                                <span className="font-bold">Venue:</span> {order.venue?.name}
+                             </p>
+                             <p className="text-xs text-brown/50 mb-2">
+                                <span className="font-bold">Items:</span> {order.items?.length || 0} items
+                             </p>
+                             <div className="text-xs text-brown/40 mb-4">
+                                {order.items?.slice(0, 2).map((item, i) => (
+                                  <span key={i} className="inline-block mr-2">
+                                    {item.isCustomItem ? '🥗' : '🍴'} {item.name} x{item.quantity}
+                                  </span>
+                                ))}
+                                {order.items?.length > 2 && <span className="text-brown/30">+{order.items.length - 2} more</span>}
+                             </div>
+                             <div className="flex items-center justify-between pt-4 border-t border-beige">
+                                <div className="flex gap-2">
+                                  <button 
+                                    onClick={() => handleViewOrderDetails(order)}
+                                    className="text-xs font-bold text-sage uppercase tracking-widest hover:underline"
+                                  >
+                                    View Details
+                                  </button>
+                                  {order.status === 'Pending' && (
+                                    <button 
+                                      onClick={() => handleSetPricing(order)}
+                                      className="text-xs font-bold text-peach uppercase tracking-widest hover:underline"
+                                    >
+                                      Set Pricing
+                                    </button>
+                                  )}
+                                </div>
+                                <select 
+                                  value={order.status}
+                                  onChange={(e) => handleUpdateOrderStatus(order._id, e.target.value)}
+                                  className="text-xs font-bold text-brown border border-beige rounded px-2 py-1"
+                                >
+                                  <option value="pending">Pending</option>
+                                  <option value="confirmed">Confirmed</option>
+                                  <option value="preparing">Preparing</option>
+                                  <option value="completed">Completed</option>
+                                  <option value="cancelled">Cancelled</option>
+                                </select>
+                             </div>
+                          </div>
+                       ))}
+                    </div>
+                 </div>
+              )}
+
               {activeTab === 'certificates' && (
                  <div key="certificates" className="space-y-4">
                     {certificates.length === 0 && (
@@ -493,6 +667,273 @@ export default function AdminDashboard() {
             box-shadow: 0 10px 30px -10px rgba(107, 79, 58, 0.08);
          }
       `}</style>
+
+      {/* Order Details Modal */}
+      <AnimatePresence>
+        {showOrderDetails && selectedOrder && (
+          <div 
+            className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-brown/40 backdrop-blur-sm" 
+            onClick={handleCloseOrderDetails}
+          >
+            <div 
+              className="glass-panel w-full max-w-4xl max-h-[90vh] overflow-y-auto p-10 relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button 
+                onClick={handleCloseOrderDetails}
+                className="absolute top-8 right-8 text-brown/20 hover:text-brown transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+              
+              <h2 className="text-2xl font-bold text-brown mb-6">Order Details - {selectedOrder.orderNumber}</h2>
+              
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                {/* Event Details */}
+                <div className="bg-white/70 rounded-3xl p-6 border border-beige">
+                  <h3 className="text-lg font-bold text-brown mb-4">Event Information</h3>
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-brown/60">Event Type:</span>
+                      <span className="font-semibold">{selectedOrder.eventType}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-brown/60">Date:</span>
+                      <span className="font-semibold">{new Date(selectedOrder.eventDate).toLocaleDateString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-brown/60">Time:</span>
+                      <span className="font-semibold">{selectedOrder.eventTime}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-brown/60">Guests:</span>
+                      <span className="font-semibold">{selectedOrder.guestCount}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-brown/60">Status:</span>
+                      <span className={`font-semibold ${
+                        selectedOrder.status === 'Pending' ? 'text-yellow' :
+                        selectedOrder.status === 'Confirmed' ? 'text-green' :
+                        selectedOrder.status === 'Preparing' ? 'text-blue' :
+                        selectedOrder.status === 'Completed' ? 'text-green' :
+                        'text-red'
+                      }`}>{selectedOrder.status}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Customer & Venue */}
+                <div className="space-y-6">
+                  <div className="bg-white/70 rounded-3xl p-6 border border-beige">
+                    <h3 className="text-lg font-bold text-brown mb-4">Customer Information</h3>
+                    <div className="space-y-2">
+                      <p><span className="font-semibold">Name:</span> {selectedOrder.customerId?.name}</p>
+                      <p><span className="font-semibold">Email:</span> {selectedOrder.customerId?.email}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-white/70 rounded-3xl p-6 border border-beige">
+                    <h3 className="text-lg font-bold text-brown mb-4">Venue Details</h3>
+                    <div className="space-y-2">
+                      <p><span className="font-semibold">Venue:</span> {selectedOrder.venue?.name}</p>
+                      <p><span className="font-semibold">Address:</span> {selectedOrder.venue?.address}</p>
+                      <p><span className="font-semibold">Contact:</span> {selectedOrder.venue?.contactNumber}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Order Items */}
+              <div className="bg-white/70 rounded-3xl p-6 border border-beige mb-6">
+                <h3 className="text-lg font-bold text-brown mb-4">Order Items ({selectedOrder.items?.length || 0})</h3>
+                <div className="space-y-3">
+                  {selectedOrder.items?.map((item, index) => (
+                    <div key={index} className="flex items-center justify-between p-4 bg-cream/50 rounded-2xl">
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">{item.isCustomItem ? '🥗' : '🍴'}</span>
+                        <div>
+                          <p className="font-semibold">{item.name}</p>
+                          <p className="text-sm text-brown/60">
+                            {item.isCustomItem ? 'Custom Item' : 'Menu Item'} • {item.dietary}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-semibold">x{item.quantity}</p>
+                        {item.price && <p className="text-sm text-brown/60">₹{item.price}</p>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Pricing */}
+              {selectedOrder.pricing && (
+                <div className="bg-white/70 rounded-3xl p-6 border border-beige">
+                  <h3 className="text-lg font-bold text-brown mb-4">Pricing</h3>
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span>Subtotal:</span>
+                      <span className="font-semibold">₹{selectedOrder.pricing.subtotal}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Service Charge:</span>
+                      <span className="font-semibold">₹{selectedOrder.pricing.serviceCharge}</span>
+                    </div>
+                    <div className="border-t border-beige pt-3 flex justify-between">
+                      <span className="font-bold">Total:</span>
+                      <span className="font-bold text-lg">₹{selectedOrder.pricing.totalAmount}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Advance (50%):</span>
+                      <span className="font-semibold">₹{selectedOrder.pricing.advanceAmount}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Remaining:</span>
+                      <span className="font-semibold">₹{selectedOrder.pricing.remainingAmount}</span>
+                    </div>
+                    <div className="mt-4 p-4 bg-sage/10 rounded-2xl">
+                      <p className="text-sm font-semibold text-sage mb-2">
+                        💳 Payment Status
+                      </p>
+                      <p className="text-xs text-brown/60">
+                        {selectedOrder.paymentStatus === 'Pending' && 'Customer needs to pay advance amount'}
+                        {selectedOrder.paymentStatus === 'Advance Paid' && 'Advance paid, remaining amount due on event day'}
+                        {selectedOrder.paymentStatus === 'Fully Paid' && 'Full payment completed'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Pricing Modal */}
+      <AnimatePresence>
+        {showPricingModal && selectedOrder && (
+          <div 
+            className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-brown/40 backdrop-blur-sm" 
+            onClick={() => setShowPricingModal(false)}
+          >
+            <div 
+              className="glass-panel w-full max-w-2xl p-8 relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button 
+                onClick={() => setShowPricingModal(false)}
+                className="absolute top-6 right-6 text-brown/20 hover:text-brown transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+              
+              <h2 className="text-2xl font-bold text-brown mb-6">Set Order Pricing</h2>
+              <p className="text-brown/60 mb-6">Order #{selectedOrder.orderNumber} - {selectedOrder.eventType}</p>
+              
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-brown mb-2">
+                      Subtotal (Items Cost)
+                    </label>
+                    <input
+                      type="number"
+                      value={pricingForm.subtotal}
+                      onChange={(e) => handlePricingChange('subtotal', e.target.value)}
+                      className="w-full px-4 py-3 rounded-2xl border border-beige bg-white/80 text-brown font-semibold"
+                      placeholder="0"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-brown mb-2">
+                      Service Charge (5%)
+                    </label>
+                    <input
+                      type="number"
+                      value={pricingForm.serviceCharge}
+                      onChange={(e) => handlePricingChange('serviceCharge', e.target.value)}
+                      className="w-full px-4 py-3 rounded-2xl border border-beige bg-cream/50 text-brown font-semibold"
+                      readOnly
+                    />
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-brown mb-2">
+                      Total Amount
+                    </label>
+                    <input
+                      type="number"
+                      value={pricingForm.totalAmount}
+                      onChange={(e) => handlePricingChange('totalAmount', e.target.value)}
+                      className="w-full px-4 py-3 rounded-2xl border border-beige bg-white/80 text-brown font-bold text-lg"
+                      placeholder="0"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-brown mb-2">
+                      Advance Amount (50%)
+                    </label>
+                    <input
+                      type="number"
+                      value={pricingForm.advanceAmount}
+                      onChange={(e) => handlePricingChange('advanceAmount', e.target.value)}
+                      className="w-full px-4 py-3 rounded-2xl border border-beige bg-cream/50 text-brown font-semibold"
+                      readOnly
+                    />
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-brown mb-2">
+                      Remaining Amount
+                    </label>
+                    <input
+                      type="number"
+                      value={pricingForm.remainingAmount}
+                      onChange={(e) => handlePricingChange('remainingAmount', e.target.value)}
+                      className="w-full px-4 py-3 rounded-2xl border border-beige bg-cream/50 text-brown font-semibold"
+                      readOnly
+                    />
+                  </div>
+                </div>
+              </div>
+              
+              <div className="mt-6 p-4 bg-sage/10 rounded-2xl">
+                <p className="text-sm font-semibold text-sage mb-2">
+                  💡 Pricing Summary
+                </p>
+                <p className="text-xs text-brown/60">
+                  Customer will pay ₹{pricingForm.advanceAmount} as advance and ₹{pricingForm.remainingAmount} on event day.
+                  Total: ₹{pricingForm.totalAmount}
+                </p>
+              </div>
+              
+              <div className="mt-6 flex gap-4">
+                <button
+                  onClick={handleUpdatePricing}
+                  className="flex-1 bg-brown text-white hover:bg-brown/80 px-6 py-4 rounded-2xl font-bold transition-all shadow-lg"
+                >
+                  Update Pricing & Confirm Order
+                </button>
+                <button
+                  onClick={() => setShowPricingModal(false)}
+                  className="px-6 py-4 rounded-2xl border border-beige bg-white/80 text-brown hover:bg-brown/10 transition-all font-bold"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

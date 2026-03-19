@@ -82,10 +82,12 @@ const cateringOrderSchema = Joi.object({
     guestCount: Joi.number().required().min(10),
     servingStyle: Joi.string().valid('Buffet', 'Plated', 'Cocktail', 'Family Style').default('Buffet'),
     items: Joi.array().items(Joi.object({
-        productId: Joi.string().required(),
+        productId: Joi.string().optional(),
         name: Joi.string().required(),
         quantity: Joi.number().required().min(1),
-        price: Joi.number().required().min(0),
+        price: Joi.number().optional().min(0),
+        isCustomItem: Joi.boolean().default(false),
+        dietary: Joi.string().valid('vegetarian', 'vegan', 'jain').default('vegetarian'),
         customizations: Joi.object({
             spiceLevel: Joi.string().valid('Low', 'Medium', 'High'),
             specialInstructions: Joi.string()
@@ -97,14 +99,7 @@ const cateringOrderSchema = Joi.object({
         quantity: Joi.number().min(1),
         price: Joi.number().min(0)
     })),
-    specialRequirements: Joi.object({
-        dietaryRestrictions: Joi.array().items(Joi.string()),
-        equipmentNeeded: Joi.array().items(Joi.string().valid(
-            'Tables', 'Chairs', 'Serving Dishes', 'Cutlery', 'Decorations', 'Sound System'
-        )),
-        staffRequired: Joi.number().default(0),
-        specialInstructions: Joi.string()
-    })
+    specialRequirements: Joi.string().optional(),
 }).options({ convert: true, allowUnknown: true });
 
 module.exports = {

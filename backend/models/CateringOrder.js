@@ -44,17 +44,23 @@ const cateringOrderSchema = new mongoose.Schema({
     productId: { 
       type: mongoose.Schema.Types.ObjectId, 
       ref: 'Product', 
-      required: true 
+      required: false 
     },
     name: { type: String, required: true },
     quantity: { type: Number, required: true },
-    price: { type: Number, required: true },
+    price: { type: Number, required: false },
     customizations: {
       spiceLevel: { 
         type: String, 
         enum: ['Low', 'Medium', 'High'] 
       },
       specialInstructions: { type: String }
+    },
+    isCustomItem: { type: Boolean, default: false },
+    dietary: { 
+      type: String, 
+      enum: ['vegetarian', 'vegan', 'jain'], 
+      default: 'vegetarian' 
     }
   }],
   packages: [{
@@ -109,38 +115,31 @@ const cateringOrderSchema = new mongoose.Schema({
   cancelledAt: { type: Date }
 }, { timestamps: true });
 
-// Generate order number before saving
-cateringOrderSchema.pre('save', async function(next) {
-  if (this.isNew) {
-    const count = await this.constructor.countDocuments();
-    this.orderNumber = `CAT${String(count + 1).padStart(6, '0')}`;
-  }
-  next();
-});
-
 // Calculate total amount
 cateringOrderSchema.methods.calculateTotal = function() {
   let subtotal = 0;
   
   // Calculate items total
   this.items.forEach(item => {
-    subtotal += item.price * item.quantity;
+    if (item.price && !isNaN(item.price)) {
+      subtotal += item.price * item.quantity;
+    }
   });
   
   // Calculate packages total
   this.packages.forEach(pkg => {
-    subtotal += pkg.price * pkg.quantity;
+    if (pkg.price && !isNaN(pkg.price)) {
+      subtotal += pkg.price * pkg.quantity;
+    }
   });
   
-  const serviceCharge = subtotal * 0.10; // 10% service charge
-  const tax = (subtotal + serviceCharge) * 0.18; // 18% GST
-  const total = subtotal + serviceCharge + tax;
+  const serviceCharge = subtotal * 0.05; // 5% service charge
+  const total = subtotal + serviceCharge;
   const advance = total * 0.50; // 50% advance
   
   this.pricing = {
     subtotal,
     serviceCharge,
-    tax,
     totalAmount: total,
     advanceAmount: advance,
     remainingAmount: total - advance
