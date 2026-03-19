@@ -1,0 +1,13 @@
+{
+  "name": "ccweb-fullstack",
+  "version": "1.0.0",
+  "description": "Poonam Cooking and Baking Classes - Full Stack Application",
+  "scripts": {
+    "build": "cd frontend && npm run build",
+    "start": "cd backend && npm start",
+    "dev": "concurrently \"npm run start\" \"cd frontend && npm run dev\""
+  },
+  "devDependencies": {
+    "concurrently": "^7.6.0"
+  }
+}

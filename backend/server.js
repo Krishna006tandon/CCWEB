@@ -19,8 +19,22 @@ const app = express();
 // Body parser
 app.use(express.json());
 
-// Enable CORS
-app.use(cors());
+// Enable CORS with specific configuration
+app.use(cors({
+  origin: [
+    'http://localhost:5173', 
+    'http://localhost:3000', 
+    'http://127.0.0.1:5173', 
+    'http://127.0.0.1:3000',
+    'https://poonamcookingclasses.vercel.app',
+    'https://poonamcookingclasses.onrender.com',
+    /^https:\/\/.*\.vercel\.app$/,
+    /^https:\/\/.*\.onrender\.com$/
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // Mount routers
 app.use('/api/auth', require('./routes/authRoutes'));
@@ -34,6 +48,15 @@ app.use('/api/catering', require('./routes/cateringRoutes'));
 
 app.get('/', (req, res) => {
   res.send('API is running...');
+});
+
+// Debug endpoint to test connectivity
+app.get('/api/test', (req, res) => {
+  res.json({ 
+    message: 'API is working!', 
+    timestamp: new Date().toISOString(),
+    headers: req.headers
+  });
 });
 
 // Error Handling Middlewares

@@ -13,8 +13,14 @@ export default function Login() {
     e.preventDefault();
     setError('');
     setLoading(true);
+    
+    console.log('Submitting login with:', { email, password: '***' });
+    
     try {
+      console.log('Making API call to:', api.defaults.baseURL + '/auth/login');
       const { data } = await api.post('/auth/login', { email, password });
+      console.log('Login response:', data);
+      
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data));
       
@@ -24,7 +30,17 @@ export default function Login() {
         navigate('/dashboard');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
+      console.error('Login error:', err);
+      console.error('Error response:', err.response?.data);
+      
+      // Handle different types of errors for mobile
+      if (err.code === 'NETWORK_ERROR' || err.message.includes('Network Error')) {
+        setError('Network error. Please check your internet connection and try again.');
+      } else if (err.code === 'ECONNABORTED') {
+        setError('Request timed out. Please try again.');
+      } else {
+        setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
+      }
     } finally {
       setLoading(false);
     }

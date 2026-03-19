@@ -17,8 +17,14 @@ export default function Register() {
     e.preventDefault();
     setError('');
     setLoading(true);
+    
+    console.log('Submitting registration with:', { name, email, password: '***', role: formData.role });
+    
     try {
+      console.log('Making API call to:', api.defaults.baseURL + '/auth/register');
       const { data } = await api.post('/auth/register', formData);
+      console.log('Registration response:', data);
+      
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data));
       
@@ -28,6 +34,8 @@ export default function Register() {
         navigate('/dashboard');
       }
     } catch (err) {
+      console.error('Registration error:', err);
+      console.error('Error response:', err.response?.data);
       setError(err.response?.data?.message || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
