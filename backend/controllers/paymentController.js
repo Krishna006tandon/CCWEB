@@ -47,10 +47,7 @@ exports.createOrder = async (req, res) => {
       },
       // Mobile UPI specific configurations
       payment_capture: 1,
-      // Add mobile-specific options
-      method: 'upi', // Default to UPI for mobile
-      // Timeout for mobile payments
-      expire_by: Math.floor(Date.now() / 1000) + (15 * 60), // 15 minutes expiry
+      // Remove expire_by as it's not supported in live mode
     };
 
     const order = await razorpay.orders.create(options);
