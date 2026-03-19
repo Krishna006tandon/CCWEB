@@ -23,7 +23,7 @@ export default function About() {
           
           <div className="lg:w-1/2 relative">
              <div className="aspect-square rounded-[3rem] overflow-hidden shadow-2xl rotate-3">
-                <img src="https://images.unsplash.com/photo-1556910103-1c02745a872f?w=800" className="w-full h-full object-cover" alt="Cooking" />
+                <img src="https://images.unsplash.com/photo-1556910103-1c02745a872f?w=800" className="w-full h-full object-cover" alt="Professional chef cooking in modern kitchen with fresh ingredients" />
              </div>
              <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-peach rounded-full blur-[100px] -z-10 opacity-30"></div>
           </div>

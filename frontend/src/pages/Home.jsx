@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
+import SEO from '../components/SEO';
 
 export default function Home() {
   const [featuredClasses, setFeaturedClasses] = useState([]);
@@ -27,7 +28,14 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="w-full relative">
+    <>
+      <SEO 
+        title="Home - Learn to Cook Like a Pro | Poonam Cooking and Baking Classes"
+        description="Join Poonam Cooking and Baking Classes for professional culinary training in Mumbai. Learn cooking, baking, and catering from expert chefs with interactive courses and premium recipes."
+        keywords="poonam classes, poonam cooking classes, baking classes, poonam baking classes, cooking classes Mumbai, culinary training, professional cooking, chef training, cooking courses, baking courses, catering classes"
+        ogUrl="/"
+      />
+      <div className="w-full relative">
       <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-peach/30 rounded-full blur-[120px] -z-10 -translate-y-1/2 translate-x-1/3"></div>
       <div className="absolute top-[40%] left-0 w-[600px] h-[600px] bg-sage/20 rounded-full blur-[100px] -z-10 -translate-x-1/2"></div>
       
@@ -169,5 +177,6 @@ export default function Home() {
         </div>
       </section>
     </div>
+    </>
   );
 }

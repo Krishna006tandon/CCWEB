@@ -1,0 +1,18 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://poonamcookingclasses.com/sitemap.xml
+
+# Block common non-content paths
+Disallow: /dashboard
+Disallow: /admin
+Disallow: /enroll
+Disallow: /event-catering
+Disallow: /catering-order
+Disallow: /api/
+
+# Block development and utility files
+Disallow: /*.json$
+Disallow: /src/
+Disallow: /node_modules/
