@@ -6,12 +6,19 @@ export default function About() {
         <section className="flex flex-col lg:flex-row items-center gap-16 mb-32">
           <div className="lg:w-1/2">
             <h1 className="text-5xl font-bold text-brown mb-8 tracking-tight">Our Story</h1>
+            <div className="mb-8">
+              <img src="/about-logo.png" alt="Poonam Cooking and Baking Classes Logo" className="w-full max-w-md mx-auto mb-6" />
+            </div>
             <p className="text-xl text-brown/70 font-light leading-relaxed mb-6">
-              Founded in 2026, Cookery. began with a simple mission: to bridge the gap between amateur home cooking and professional culinary artistry.
+              Founded in 2026, Poonam Cooking and Baking Classes began with a simple mission: to bridge the gap between amateur home cooking and professional culinary artistry.
             </p>
             <p className="text-lg text-brown/60 font-light leading-relaxed mb-8">
-              We believe that everyone has the potential to be a great chef. Our platform connects passionate food enthusiasts with Michelin-star experienced chefs through immersive, interactive online masterclasses.
+              We believe that everyone has the potential to be a great chef. Our platform connects passionate food enthusiasts with experienced chefs through immersive, interactive online masterclasses.
             </p>
+            <div className="bg-sage/10 rounded-2xl p-6 mt-8">
+              <p className="text-sm font-semibold text-sage mb-2">Our Philosophy</p>
+              <p className="text-brown/70 italic">"Bridging Home Cooking with Professional Mastery"</p>
+            </div>
           </div>
           
           <div className="lg:w-1/2 relative">

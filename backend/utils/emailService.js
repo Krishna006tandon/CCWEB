@@ -48,7 +48,7 @@ exports.sendEnrollmentInvoice = async ({ studentName, studentEmail, className, c
     <body>
       <div class="container">
         <div class="header">
-          <h1>🍳 Poonam Cooking Classes</h1>
+          <h1>🍳 Poonam Cooking and Baking Classes</h1>
           <p>Enrollment Confirmation & Invoice</p>
         </div>
         <div class="body">
@@ -86,7 +86,7 @@ exports.sendEnrollmentInvoice = async ({ studentName, studentEmail, className, c
           </p>
         </div>
         <div class="footer">
-          <p>© ${new Date().getFullYear()} Poonam Cooking Classes. All rights reserved.</p>
+          <p>© ${new Date().getFullYear()} Poonam Cooking and Baking Classes. All rights reserved.</p>
           <p style="margin-top: 6px;">This is an auto-generated invoice. Please keep it for your records.</p>
         </div>
       </div>
@@ -95,7 +95,7 @@ exports.sendEnrollmentInvoice = async ({ studentName, studentEmail, className, c
   `;
 
   await transporter.sendMail({
-    from: `"Poonam Cooking Classes" <${process.env.EMAIL_USER}>`,
+    from: `"Poonam Cooking and Baking Classes" <${process.env.EMAIL_USER}>`,
     to: studentEmail,
     subject: `✅ Enrollment Confirmed — ${className}`,
     html: htmlContent,
@@ -138,7 +138,7 @@ exports.sendNoteNotification = async ({ studentName, studentEmail, noteTitle, cl
           <a href="${fileURL}" class="btn">Download Material</a>
         </div>
         <div class="footer">
-          <p>© ${new Date().getFullYear()} Poonam Cooking Classes. All rights reserved.</p>
+          <p>© ${new Date().getFullYear()} Poonam Cooking and Baking Classes. All rights reserved.</p>
         </div>
       </div>
     </body>
@@ -146,7 +146,7 @@ exports.sendNoteNotification = async ({ studentName, studentEmail, noteTitle, cl
   `;
 
   await transporter.sendMail({
-    from: `"Poonam Cooking Classes" <${process.env.EMAIL_USER}>`,
+    from: `"Poonam Cooking and Baking Classes" <${process.env.EMAIL_USER}>`,
     to: studentEmail,
     subject: `📄 New Study Material: ${noteTitle} — ${className}`,
     html: htmlContent,
@@ -196,7 +196,7 @@ exports.sendCertificateEmail = async ({ studentName, studentEmail, className, ce
           <a href="${certificateURL}" class="btn">Download Certificate</a>
         </div>
         <div class="footer">
-          <p>© ${new Date().getFullYear()} Poonam Cooking Classes. All rights reserved.</p>
+          <p>© ${new Date().getFullYear()} Poonam Cooking and Baking Classes. All rights reserved.</p>
         </div>
       </div>
     </body>
@@ -204,7 +204,7 @@ exports.sendCertificateEmail = async ({ studentName, studentEmail, className, ce
   `;
 
   await transporter.sendMail({
-    from: `"Poonam Cooking Classes" <${process.env.EMAIL_USER}>`,
+    from: `"Poonam Cooking and Baking Classes" <${process.env.EMAIL_USER}>`,
     to: studentEmail,
     subject: `🏆 Your Certificate — ${className}`,
     html: htmlContent,
@@ -302,7 +302,7 @@ exports.sendCateringConfirmation = async (order) => {
           </p>
         </div>
         <div class="footer">
-          <p>© ${new Date().getFullYear()} Poonam Cooking Classes Catering. All rights reserved.</p>
+          <p>© ${new Date().getFullYear()} Poonam Cooking and Baking Classes Catering. All rights reserved.</p>
           <p style="margin-top: 6px;">This is an auto-generated confirmation. Please keep it for your records.</p>
         </div>
       </div>
@@ -311,7 +311,7 @@ exports.sendCateringConfirmation = async (order) => {
   `;
 
   await transporter.sendMail({
-    from: `"Poonam Cooking Classes Catering" <${process.env.EMAIL_USER}>`,
+    from: `"Poonam Cooking and Baking Classes Catering" <${process.env.EMAIL_USER}>`,
     to: order.customerId.email,
     subject: `🍽️ Catering Order Confirmed — ${order.orderNumber}`,
     html: htmlContent,
@@ -424,7 +424,7 @@ exports.sendCateringUpdate = async (order, updateType) => {
           </p>
         </div>
         <div class="footer">
-          <p>© ${new Date().getFullYear()} Poonam Cooking Classes Catering. All rights reserved.</p>
+          <p>© ${new Date().getFullYear()} Poonam Cooking and Baking Classes Catering. All rights reserved.</p>
         </div>
       </div>
     </body>
@@ -432,7 +432,7 @@ exports.sendCateringUpdate = async (order, updateType) => {
   `;
 
   await transporter.sendMail({
-    from: `"Poonam Cooking Classes Catering" <${process.env.EMAIL_USER}>`,
+    from: `"Poonam Cooking and Baking Classes Catering" <${process.env.EMAIL_USER}>`,
     to: order.customerId.email,
     subject,
     html: htmlContent,

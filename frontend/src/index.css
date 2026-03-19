@@ -19,6 +19,73 @@
   body {
     @apply bg-cream text-brown antialiased selection:bg-sage selection:text-white;
   }
+  
+  /* Mobile-first responsive utilities */
+  .container-responsive {
+    @apply px-3 sm:px-4 md:px-6 lg:px-8;
+  }
+  
+  .text-responsive-xs {
+    @apply text-xs sm:text-sm;
+  }
+  
+  .text-responsive-sm {
+    @apply text-sm sm:text-base;
+  }
+  
+  .text-responsive-base {
+    @apply text-base sm:text-lg;
+  }
+  
+  .text-responsive-lg {
+    @apply text-lg sm:text-xl;
+  }
+  
+  .text-responsive-xl {
+    @apply text-xl sm:text-2xl;
+  }
+  
+  .text-responsive-2xl {
+    @apply text-2xl sm:text-3xl;
+  }
+  
+  .text-responsive-3xl {
+    @apply text-3xl sm:text-4xl;
+  }
+  
+  .text-responsive-4xl {
+    @apply text-4xl sm:text-5xl;
+  }
+  
+  .spacing-responsive-y {
+    @apply py-4 sm:py-6 md:py-8 lg:py-10;
+  }
+  
+  .spacing-responsive-x {
+    @apply px-4 sm:px-6 md:px-8 lg:px-10;
+  }
+  
+  .card-responsive {
+    @apply rounded-xl sm:rounded-2xl lg:rounded-3xl;
+  }
+  
+  .button-responsive {
+    @apply px-4 py-2 sm:px-6 sm:py-3 text-sm sm:text-base rounded-xl sm:rounded-2xl;
+  }
+  
+  /* Mobile touch targets */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+  
+  /* Safe areas for mobile devices */
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 }
 
 .glass-panel {
@@ -39,4 +106,31 @@
 
 .text-gradient {
   @apply bg-clip-text text-transparent bg-gradient-to-r from-brown to-sage;
+}
+
+/* Mobile-specific improvements */
+@media (max-width: 640px) {
+  .glass-panel {
+    @apply rounded-2xl px-4 py-3;
+  }
+  
+  .premium-card {
+    @apply rounded-2xl p-4;
+  }
+  
+  .btn-primary,
+  .btn-secondary {
+    @apply px-6 py-2.5 text-sm rounded-2xl;
+  }
+}
+
+/* Smooth scrolling for mobile */
+@media (hover: none) and (pointer: coarse) {
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .group:hover .group-hover\:scale-105 {
+    transform: scale(1);
+  }
 }

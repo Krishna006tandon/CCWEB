@@ -8,8 +8,8 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-start gap-12 mb-16">
            <div className="md:w-1/3">
               <Link to="/" className="text-2xl font-bold text-brown flex items-center gap-2 mb-6">
-                <img src={logo} alt="Poonam Cooking Classes" className="w-30 h-15 object-contain" />
-                Poonam Cooking Classes
+                <img src={logo} alt="Poonam Cooking and Baking Classes" className="w-30 h-15 object-contain" />
+                Poonam Cooking and Baking Classes
               </Link>
               <p className="text-brown/70 text-sm leading-relaxed mb-6">
                  Elevate your culinary skills with interactive classes, premium recipes, and tools designed for every level.
@@ -37,7 +37,7 @@ export default function Footer() {
         </div>
         
         <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-beige text-xs text-brown/50">
-           <p>© 2026 Poonam Cooking Classes. All rights reserved.</p>
+           <p>© 2026 Poonam Cooking and Baking Classes. All rights reserved.</p>
            <div className="flex space-x-4 mt-4 md:mt-0">
              <div className="w-8 h-8 rounded-full bg-peach/50 flex items-center justify-center hover:bg-peach transition-colors cursor-pointer text-brown">IG</div>
              <div className="w-8 h-8 rounded-full bg-peach/50 flex items-center justify-center hover:bg-peach transition-colors cursor-pointer text-brown">TW</div>
