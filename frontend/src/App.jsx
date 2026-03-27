@@ -16,7 +16,16 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 import Register from './pages/Register';
 
+import Maintenance from './pages/Maintenance';
+
 function App() {
+  // Set to 'true' to show maintenance page, 'false' for normal site
+  const maintenanceMode = true;
+
+  if (maintenanceMode) {
+    return <Maintenance />;
+  }
+
   return (
     <Router>
       <div className="flex flex-col min-h-screen">
