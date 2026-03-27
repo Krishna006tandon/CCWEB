@@ -64,7 +64,7 @@ const Maintenance = () => {
           </h1>
 
           <p className="text-lg md:text-xl text-neutral-400 mb-10 leading-relaxed max-w-lg mx-auto">
-            <b>Poonam Cooking Classes</b> is currently undergoing a scheduled upgrade to serve you better. We'll be back shortly with a fresh experience.
+            <b>Poonam Cooking & Baking Classes</b> is currently undergoing a scheduled upgrade to serve you better. We'll be back shortly with a fresh experience.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -96,7 +96,7 @@ const Maintenance = () => {
         transition={{ delay: 1, duration: 1 }}
         className="absolute bottom-10 text-neutral-500 text-sm tracking-wide"
       >
-        © {new Date().getFullYear()} Poonam Cooking Classes
+        © {new Date().getFullYear()} Poonam Cooking & Baking Classes | Nexbyte_Core
       </motion.div>
     </div>
   );
