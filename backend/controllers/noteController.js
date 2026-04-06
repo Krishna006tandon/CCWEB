@@ -6,7 +6,7 @@ exports.uploadNote = async (req, res) => {
     let fileURL = '';
     
     if (req.file) {
-      fileURL = req.file.path;
+      fileURL = req.file.path || req.file.secure_url || req.file.url;
     } else if (req.body.fileURL) {
       fileURL = req.body.fileURL;
     }

@@ -18,22 +18,19 @@ export default function StudentDashboard() {
       try {
         const { data } = await api.get('/enrollments/my');
         setEnrollments(data);
-        
-        // If there are enrollments, fetch notes for the first class as default or all?
-        // Let's fetch notes for all enrolled classes for simplicity in this dashboard view
+
+        const confirmedEnrollments = data.filter((enroll) => enroll.paymentStatus === 'Completed');
         const allNotes = [];
-        for (const enroll of data) {
-           if (enroll.classId?._id) {
-              const notesRes = await api.get(`/notes/${enroll.classId._id}`);
-              allNotes.push(...notesRes.data);
-           }
+        for (const enroll of confirmedEnrollments) {
+          if (enroll.classId?._id) {
+            const notesRes = await api.get(`/notes/${enroll.classId._id}`);
+            allNotes.push(...notesRes.data);
+          }
         }
         setNotes(allNotes);
 
-        // Fetch catering orders
         const cateringRes = await api.get('/catering/orders/my');
         setCateringOrders(cateringRes.data);
-
       } catch (error) {
         console.error('Error fetching student data:', error);
       } finally {
@@ -59,6 +56,17 @@ export default function StudentDashboard() {
       <div className="w-12 h-12 border-4 border-sage border-t-transparent rounded-full animate-spin"></div>
     </div>
   );
+
+  const confirmedEnrollments = enrollments.filter((enroll) => enroll.paymentStatus === 'Completed');
+  const bookingRequests = enrollments.filter((enroll) => enroll.paymentStatus !== 'Completed');
+
+  const getRequestBadgeClass = (status) => {
+    if (status === 'Confirmed') return 'bg-sage/10 text-sage';
+    if (status === 'Awaiting Payment') return 'bg-peach/10 text-peach';
+    if (status === 'Slot Proposed') return 'bg-brown/10 text-brown';
+    if (status === 'Cancelled') return 'bg-red-50 text-red-500';
+    return 'bg-yellow-100 text-yellow-700';
+  };
 
   const tabs = [
     {id: 'classes', icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253', label: 'My Classes'},
@@ -132,15 +140,70 @@ export default function StudentDashboard() {
                 key="classes"
                 className="space-y-6"
               >
-                <div className="mb-10 flex justify-between items-end">
-                   <h3 className="text-xl text-brown font-bold flex items-center gap-3">
-                      <span className="w-2.5 h-2.5 rounded-full bg-sage inline-block"></span>
-                      Enrolled Classes
-                   </h3>
-                </div>
-                
+                <div className="grid grid-cols-1 xl:grid-cols-[1.1fr_1.4fr] gap-6 lg:gap-8">
+                  <div className="glass-panel p-6 sm:p-8 bg-white/85">
+                    <div className="flex justify-between items-center mb-6">
+                      <h3 className="text-xl text-brown font-bold flex items-center gap-3">
+                        <span className="w-2.5 h-2.5 rounded-full bg-peach inline-block"></span>
+                        Booking Requests
+                      </h3>
+                      <Link to="/classes" className="text-xs font-bold uppercase tracking-widest text-sage hover:text-brown transition-colors">
+                        New Request
+                      </Link>
+                    </div>
+
+                    <div className="space-y-4">
+                      {bookingRequests.map((request) => (
+                        <div key={request._id} className="rounded-[1.5rem] border border-beige/60 bg-white/80 p-5">
+                          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+                            <h4 className="font-bold text-brown text-base">{request.classId?.title}</h4>
+                            <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${getRequestBadgeClass(request.requestStatus)}`}>
+                              {request.requestStatus}
+                            </span>
+                          </div>
+                          <div className="grid grid-cols-1 gap-2 text-xs text-brown/60">
+                            <p><span className="font-bold text-brown/80">Name:</span> {request.contactName}</p>
+                            <p><span className="font-bold text-brown/80">Email:</span> {request.contactEmail}</p>
+                            <p><span className="font-bold text-brown/80">Mobile:</span> {request.contactPhone}</p>
+                          </div>
+                          {request.adminNotes && (
+                            <div className="mt-4 rounded-2xl bg-cream/70 border border-beige/60 p-4">
+                              <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-brown/35 mb-2">Admin Note</p>
+                              <p className="text-sm text-brown/70">{request.adminNotes}</p>
+                            </div>
+                          )}
+                          {request.quotedPrice ? (
+                            <div className="mt-4 flex items-center justify-between pt-4 border-t border-beige/50">
+                              <span className="text-[10px] font-bold uppercase tracking-[0.24em] text-brown/35">Shared Fee</span>
+                              <span className="text-lg font-bold text-sage">₹{request.quotedPrice}</span>
+                            </div>
+                          ) : (
+                            <p className="mt-4 text-[11px] font-bold uppercase tracking-[0.22em] text-brown/35 pt-4 border-t border-beige/50">
+                              Price will appear only after admin review
+                            </p>
+                          )}
+                        </div>
+                      ))}
+
+                      {bookingRequests.length === 0 && (
+                        <div className="rounded-[1.5rem] border border-dashed border-beige bg-cream/50 p-8 text-center">
+                          <p className="text-brown/40 italic text-sm sm:text-base">No active booking requests.</p>
+                          <Link to="/classes" className="text-sage font-bold mt-4 inline-block hover:underline text-sm sm:text-base">Request a class</Link>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="mb-6 flex justify-between items-end">
+                      <h3 className="text-xl text-brown font-bold flex items-center gap-3">
+                        <span className="w-2.5 h-2.5 rounded-full bg-sage inline-block"></span>
+                        Confirmed Classes
+                      </h3>
+                    </div>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
-                  {enrollments.map(enroll => (
+                  {confirmedEnrollments.map(enroll => (
                     <div key={enroll._id} className="premium-card p-4 sm:p-5 group flex flex-col relative overflow-hidden bg-white/80 backdrop-blur-xl">
                       <div className="relative overflow-hidden rounded-[0.8rem] sm:rounded-[1rem] aspect-video mb-4 sm:mb-5 shadow-inner-soft">
                          <img src={enroll.classId?.image} alt={enroll.classId?.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
@@ -149,7 +212,7 @@ export default function StudentDashboard() {
                       <div className="flex flex-col flex-grow">
                         <h3 className="text-base sm:text-lg font-bold text-brown mb-3 sm:mb-4 leading-tight line-clamp-2">{enroll.classId?.title}</h3>
                         <div className="mt-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-3 sm:pt-4 border-t border-beige/60">
-                           <span className="text-xl sm:text-2xl font-bold text-sage">&#8377;{enroll.classId?.price}</span>
+                           <span className="text-xl sm:text-2xl font-bold text-sage">&#8377;{enroll.quotedPrice || enroll.classId?.price}</span>
                            <button onClick={() => navigate(`/classes`)} className="bg-brown text-white hover:bg-brown/80 px-3 sm:px-4 py-2 rounded-full font-medium text-xs transition-colors shadow-sm text-center">
                              View Details
                            </button>
@@ -157,12 +220,14 @@ export default function StudentDashboard() {
                       </div>
                     </div>
                   ))}
-                  {enrollments.length === 0 && (
+                  {confirmedEnrollments.length === 0 && (
                     <div className="col-span-full py-12 sm:py-20 text-center glass-panel">
-                       <p className="text-brown/40 italic text-sm sm:text-base">You haven't enrolled in any classes yet.</p>
-                       <Link to="/classes" className="text-sage font-bold mt-4 inline-block hover:underline text-sm sm:text-base">Browse Classes</Link>
+                       <p className="text-brown/40 italic text-sm sm:text-base">No class is confirmed yet.</p>
+                       <p className="text-brown/35 text-xs sm:text-sm mt-3">Confirmed classes appear here after admin finalizes your request.</p>
                     </div>
                   )}
+                </div>
+                  </div>
                 </div>
               </div>
            )}
@@ -172,29 +237,74 @@ export default function StudentDashboard() {
                 key="catering"
                 className="space-y-6"
               >
-                <div className="text-center py-12 sm:py-20">
-                  <div className="w-16 h-16 sm:w-24 sm:h-24 bg-peach/20 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
-                    <span className="text-2xl sm:text-4xl">🍽️</span>
+                <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+                  <div>
+                    <h3 className="text-xl sm:text-2xl font-bold text-brown mb-2">Catering Orders</h3>
+                    <p className="text-brown/60 text-sm sm:text-base">
+                      Track your catering requests and explore upcoming event services.
+                    </p>
                   </div>
-                  <h3 className="text-xl sm:text-2xl font-bold text-brown mb-3 sm:mb-4">Catering Services</h3>
-                  <p className="text-brown/70 mb-6 sm:mb-8 max-w-md mx-auto text-sm sm:text-base">
-                    Our premium catering services are coming soon! Get ready for amazing event catering solutions.
-                  </p>
-                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-                    <Link 
-                      to="/catering-coming-soon" 
-                      className="bg-brown text-white hover:bg-brown/80 px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-medium transition-colors shadow-sm text-sm sm:text-base"
-                    >
-                      Learn More
-                    </Link>
-                    <Link 
-                      to="/contact" 
-                      className="bg-transparent border border-brown text-brown hover:bg-brown hover:text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-medium transition-colors text-sm sm:text-base"
-                    >
-                      Get Notified
-                    </Link>
-                  </div>
+                  <Link
+                    to="/event-catering"
+                    className="bg-brown text-white hover:bg-brown/80 px-6 py-3 rounded-full font-medium transition-colors shadow-sm text-sm text-center"
+                  >
+                    Place New Order
+                  </Link>
                 </div>
+
+                {cateringOrders.length > 0 ? (
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                    {cateringOrders.map((order) => (
+                      <div key={order._id} className="rounded-[1.5rem] border border-beige/60 bg-white/85 p-5 sm:p-6 shadow-soft">
+                        <div className="flex items-start justify-between gap-4 mb-4">
+                          <div>
+                            <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-brown/35 mb-2">Event</p>
+                            <h4 className="font-bold text-brown text-lg">{order.eventType}</h4>
+                          </div>
+                          <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${getRequestBadgeClass(order.status)}`}>
+                            {order.status || 'Pending'}
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-brown/70">
+                          <p><span className="font-bold text-brown/80">Date:</span> {order.eventDate ? new Date(order.eventDate).toLocaleDateString() : 'TBD'}</p>
+                          <p><span className="font-bold text-brown/80">Guests:</span> {order.guestCount || 'TBD'}</p>
+                          <p><span className="font-bold text-brown/80">Venue:</span> {order.venue?.name || 'Not shared yet'}</p>
+                          <p><span className="font-bold text-brown/80">Service:</span> {order.servingStyle || 'Standard'}</p>
+                        </div>
+                        {order.specialRequirements && (
+                          <div className="mt-4 rounded-2xl bg-cream/70 border border-beige/60 p-4">
+                            <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-brown/35 mb-2">Special Requirements</p>
+                            <p className="text-sm text-brown/70">{order.specialRequirements}</p>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12 sm:py-20">
+                    <div className="w-16 h-16 sm:w-24 sm:h-24 bg-peach/20 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                      <span className="text-2xl sm:text-4xl">🍽️</span>
+                    </div>
+                    <h3 className="text-xl sm:text-2xl font-bold text-brown mb-3 sm:mb-4">No Catering Orders Yet</h3>
+                    <p className="text-brown/70 mb-6 sm:mb-8 max-w-md mx-auto text-sm sm:text-base">
+                      Our premium catering services are live for bookings. Create your first event request to get started.
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+                      <Link 
+                        to="/event-catering" 
+                        className="bg-brown text-white hover:bg-brown/80 px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-medium transition-colors shadow-sm text-sm sm:text-base"
+                      >
+                        Book Catering
+                      </Link>
+                      <Link 
+                        to="/contact" 
+                        className="bg-transparent border border-brown text-brown hover:bg-brown hover:text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-medium transition-colors text-sm sm:text-base"
+                      >
+                        Talk to Us
+                      </Link>
+                    </div>
+                  </div>
+                )}
               </div>
            )}
 

@@ -1,12 +1,11 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import { motion as Motion } from 'framer-motion';
 
 const Maintenance = () => {
   return (
     <div className="min-h-screen bg-neutral-950 flex flex-col items-center justify-center relative overflow-hidden font-sans text-white px-4">
       {/* Background Glow */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-        <motion.div
+        <Motion.div
           animate={{
             scale: [1, 1.2, 1],
             rotate: [0, 90, 0],
@@ -15,7 +14,7 @@ const Maintenance = () => {
           transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
           className="absolute -top-1/4 -left-1/4 w-[600px] h-[600px] bg-amber-500/10 rounded-full blur-[120px]"
         />
-        <motion.div
+        <Motion.div
           animate={{
             scale: [1.2, 1, 1.2],
             rotate: [0, -90, 0],
@@ -27,7 +26,7 @@ const Maintenance = () => {
       </div>
 
       <div className="relative z-10 text-center max-w-2xl">
-        <motion.div
+        <Motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
@@ -76,7 +75,7 @@ const Maintenance = () => {
           </div>
 
           <div className="mt-12">
-            <motion.div
+            <Motion.div
               whileHover={{ scale: 1.05 }}
               className="inline-block p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm"
             >
@@ -84,20 +83,20 @@ const Maintenance = () => {
                 <span className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
                 <span className="text-neutral-300 text-sm">Our team is working on updates</span>
               </div>
-            </motion.div>
+            </Motion.div>
           </div>
-        </motion.div>
+        </Motion.div>
       </div>
 
       {/* Footer Branding */}
-      <motion.div
+      <Motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1, duration: 1 }}
         className="absolute bottom-10 text-neutral-500 text-sm tracking-wide"
       >
         © {new Date().getFullYear()} Poonam Cooking & Baking Classes | Nexbyte_Core
-      </motion.div>
+      </Motion.div>
     </div>
   );
 };

@@ -6,13 +6,15 @@ exports.createClass = async (req, res) => {
     let image = '';
     
     if (req.file) {
-      image = req.file.path;
+      image = req.file.path || req.file.secure_url || req.file.url;
     } else if (req.body.image) {
       image = req.body.image;
     }
 
+    console.log(`🖼️ [classController] req.file:`, req.file, ` | image path:`, image);
+
     if (!image) {
-      return res.status(400).json({ message: 'Image is required' });
+      return res.status(400).json({ message: 'Image is required or path is missing' });
     }
 
     const newClass = await Class.create({
@@ -46,7 +48,7 @@ exports.updateClass = async (req, res) => {
     
     let image = req.body.image;
     if (req.file) {
-      image = req.file.path;
+      image = req.file.path || req.file.secure_url || req.file.url;
     }
 
     const updatedClass = await Class.findByIdAndUpdate(

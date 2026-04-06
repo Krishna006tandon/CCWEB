@@ -2,6 +2,9 @@
   "name": "ccweb-fullstack",
   "version": "1.0.0",
   "description": "Poonam Cooking and Baking Classes - Full Stack Application",
+  "engines": {
+    "node": ">=20.19.0"
+  },
   "scripts": {
     "build": "cd frontend && npm run build",
     "start": "cd backend && npm start",

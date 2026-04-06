@@ -110,10 +110,15 @@ module.exports = {
     cateringPackageSchema,
     cateringOrderSchema,
     validate: (schema) => (req, res, next) => {
+        console.log('--- 🛑 VALIDATION CHECK ---');
+        console.log('📦 req.body arrived as:', req.body);
+        if (req.file) console.log('📄 req.file arrived as:', req.file);
         const { error } = schema.validate(req.body);
         if (error) {
+            console.error('❌ Validation Failed:', error.details[0].message);
             return res.status(400).json({ message: error.details[0].message });
         }
+        console.log('✅ Validation Passed. Moving to controller.');
         next();
     }
 };

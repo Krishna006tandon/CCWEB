@@ -98,7 +98,6 @@ exports.verifyPayment = async (req, res) => {
       console.log('🔧 Verifying mock payment or missing secret:', razorpay_order_id);
     }
 
-    // Check if enrollment already exists
     const existingEnrollment = await Enrollment.findOne({
       studentId: req.user._id,
       classId,
@@ -110,13 +109,32 @@ exports.verifyPayment = async (req, res) => {
       return res.status(200).json({ message: "Already enrolled", enrollment: existingEnrollment });
     }
 
-    // Payment is verified — create enrollment
-    const enrollment = await Enrollment.create({
+    const pendingRequest = await Enrollment.findOne({
       studentId: req.user._id,
       classId,
-      paymentId: razorpay_payment_id,
-      paymentStatus: 'Completed'
-    });
+      paymentStatus: { $ne: 'Completed' }
+    }).sort({ createdAt: -1 });
+
+    let enrollment;
+
+    if (pendingRequest) {
+      pendingRequest.paymentId = razorpay_payment_id;
+      pendingRequest.paymentStatus = 'Completed';
+      pendingRequest.requestStatus = 'Confirmed';
+      enrollment = await pendingRequest.save();
+    } else {
+      const student = await User.findById(req.user._id);
+      enrollment = await Enrollment.create({
+        studentId: req.user._id,
+        classId,
+        contactName: student?.name || 'Student',
+        contactEmail: student?.email || '',
+        contactPhone: student?.phone || 'Not provided',
+        paymentId: razorpay_payment_id,
+        paymentStatus: 'Completed',
+        requestStatus: 'Confirmed'
+      });
+    }
 
     console.log('🎓 Enrollment created:', enrollment._id);
 

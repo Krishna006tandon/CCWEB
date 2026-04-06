@@ -1,36 +1,61 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const mongoose = require('mongoose');
 const connectDB = require('./config/db');
 
-// Load env vars
 dotenv.config();
 
-// Debug: Check environment variables
-console.log('Environment check:');
-console.log('RAZORPAY_KEY:', process.env.RAZORPAY_KEY ? 'SET' : 'NOT SET');
-console.log('RAZORPAY_SECRET:', process.env.RAZORPAY_SECRET ? 'SET' : 'NOT SET');
-
-// Connect to database
-connectDB();
-
 const app = express();
+const isProduction = process.env.NODE_ENV === 'production';
+const defaultAllowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:3000',
+  'https://poonamcookingclasses.vercel.app',
+  'https://poonamcookingclasses.onrender.com'
+];
+const configuredOrigins = (process.env.CORS_ORIGIN || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+const allowedOrigins = [...new Set([...defaultAllowedOrigins, ...configuredOrigins])];
 
-// Body parser
-app.use(express.json());
+const ensureRequiredEnv = () => {
+  const required = ['MONGO_URI', 'JWT_SECRET'];
+  const missing = required.filter((key) => !process.env[key]);
 
-// Enable CORS with specific configuration
+  if (missing.length > 0) {
+    throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
+  }
+};
+
+app.disable('x-powered-by');
+app.use(express.json({ limit: '1mb' }));
+
+if (!isProduction) {
+  app.use((req, res, next) => {
+    if (req.method !== 'GET') {
+      console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+    }
+    next();
+  });
+}
+
 app.use(cors({
-  origin: [
-    'http://localhost:5173', 
-    'http://localhost:3000', 
-    'http://127.0.0.1:5173', 
-    'http://127.0.0.1:3000',
-    'https://poonamcookingclasses.vercel.app',
-    'https://poonamcookingclasses.onrender.com',
-    /^https:\/\/.*\.vercel\.app$/,
-    /^https:\/\/.*\.onrender\.com$/
-  ],
+  origin(origin, callback) {
+    if (!origin) {
+      return callback(null, true);
+    }
+
+    if (allowedOrigins.includes(origin) || /\.vercel\.app$/.test(origin) || /\.onrender\.com$/.test(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error('Not allowed by CORS'));
+  }
+  ,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -50,16 +75,19 @@ app.get('/', (req, res) => {
   res.send('API is running...');
 });
 
-// Debug endpoint to test connectivity
-app.get('/api/test', (req, res) => {
-  res.json({ 
-    message: 'API is working!', 
+app.get('/api/health', (req, res) => {
+  const dbState = mongoose.connection.readyState;
+  const isDbConnected = dbState === 1;
+  const statusCode = isDbConnected ? 200 : 503;
+
+  res.status(statusCode).json({
+    status: isDbConnected ? 'ok' : 'degraded',
+    database: isDbConnected ? 'connected' : 'disconnected',
     timestamp: new Date().toISOString(),
-    headers: req.headers
+    environment: process.env.NODE_ENV || 'development'
   });
 });
 
-// Error Handling Middlewares
 app.use((req, res, next) => {
   const error = new Error(`Not Found - ${req.originalUrl}`);
   res.status(404);
@@ -67,6 +95,8 @@ app.use((req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
+  void req;
+  void next;
   const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
   res.status(statusCode).json({
     message: err.message,
@@ -76,6 +106,17 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
-});
+const startServer = async () => {
+  try {
+    ensureRequiredEnv();
+    await connectDB();
+    app.listen(PORT, () => {
+      console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error(`Failed to start server: ${error.message}`);
+    process.exit(1);
+  }
+};
+
+startServer();

@@ -18,7 +18,12 @@ export default function Register() {
     setError('');
     setLoading(true);
     
-    console.log('Submitting registration with:', { name, email, password: '***', role: formData.role });
+    console.log('Submitting registration with:', {
+      name: formData.name,
+      email: formData.email,
+      password: '***',
+      role: formData.role
+    });
     
     try {
       console.log('Making API call to:', api.defaults.baseURL + '/auth/register');

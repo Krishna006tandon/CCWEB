@@ -6,7 +6,7 @@ exports.createProduct = async (req, res) => {
     let image = '';
     
     if (req.file) {
-      image = req.file.path;
+      image = req.file.path || req.file.secure_url || req.file.url;
     } else if (req.body.image) {
       image = req.body.image;
     }
@@ -45,7 +45,7 @@ exports.updateProduct = async (req, res) => {
     
     let image = req.body.image;
     if (req.file) {
-      image = req.file.path;
+      image = req.file.path || req.file.secure_url || req.file.url;
     }
 
     const updatedProduct = await Product.findByIdAndUpdate(

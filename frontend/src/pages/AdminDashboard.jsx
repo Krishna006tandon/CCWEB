@@ -31,6 +31,7 @@ export default function AdminDashboard() {
   });
   const [file, setFile] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [enrollmentDrafts, setEnrollmentDrafts] = useState({});
 
   useEffect(() => {
     fetchData();
@@ -47,6 +48,17 @@ export default function AdminDashboard() {
         api.get('/catering/admin/orders')
       ]);
       setEnrollments(enrolRes.data);
+      setEnrollmentDrafts(
+        enrolRes.data.reduce((acc, enrollment) => {
+          acc[enrollment._id] = {
+            requestStatus: enrollment.requestStatus || 'Pending Review',
+            paymentStatus: enrollment.paymentStatus || 'Pending',
+            quotedPrice: enrollment.quotedPrice ?? enrollment.classId?.price ?? '',
+            adminNotes: enrollment.adminNotes || ''
+          };
+          return acc;
+        }, {})
+      );
       setClasses(classRes.data);
       setProducts(prodRes.data);
       setCertificates(certRes.data);
@@ -135,6 +147,35 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleEnrollmentDraftChange = (id, field, value) => {
+    setEnrollmentDrafts((current) => ({
+      ...current,
+      [id]: {
+        ...current[id],
+        [field]: value
+      }
+    }));
+  };
+
+  const handleSaveEnrollment = async (id, statusOverride) => {
+    const draft = enrollmentDrafts[id];
+    if (!draft) return;
+
+    try {
+      await api.put(`/enrollments/${id}`, {
+        requestStatus: statusOverride || draft.requestStatus,
+        paymentStatus: draft.paymentStatus,
+        quotedPrice: draft.quotedPrice,
+        adminNotes: draft.adminNotes
+      });
+      await fetchData();
+      alert('Booking request updated successfully.');
+    } catch (saveError) {
+      console.error('Error updating enrollment:', saveError);
+      alert(saveError.response?.data?.message || 'Failed to update booking request');
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
@@ -213,9 +254,11 @@ export default function AdminDashboard() {
 
   const totalRevenue = enrollments
     .filter(en => en.paymentStatus === 'Completed')
-    .reduce((acc, en) => acc + (en.classId?.price || 0), 0);
+    .reduce((acc, en) => acc + (en.quotedPrice || en.classId?.price || 0), 0);
 
   const totalStudents = new Set(enrollments.map(en => en.studentId?._id)).size;
+  const pendingRequests = enrollments.filter((en) => en.requestStatus === 'Pending Review').length;
+  const awaitingPayment = enrollments.filter((en) => en.requestStatus === 'Awaiting Payment').length;
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-cream">
@@ -228,7 +271,7 @@ export default function AdminDashboard() {
     {id: 'classes',      label: 'Classes',       icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253'},
     {id: 'products',     label: 'Products',      icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4'},
     {id: 'notes',        label: 'Recipe Notes',  icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'},
-    {id: 'payments',     label: 'Enrollments',   icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z'},
+    {id: 'payments',     label: 'Bookings',      icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z'},
     {id: 'catering',     label: 'Catering',      icon: 'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z'},
     {id: 'certificates', label: 'Certificates',  icon: 'M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z'},
   ];
@@ -303,8 +346,9 @@ export default function AdminDashboard() {
                       {[
                         {label: 'Total Students', value: totalStudents.toString(), icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z'},
                         {label: 'Classes', value: classes.length.toString(), icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253'},
-                        {label: 'Enrollments', value: enrollments.length.toString(), icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'},
-                        {label: 'Revenue', value: `₹${totalRevenue.toLocaleString()}`, icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z'}
+                        {label: 'Pending Requests', value: pendingRequests.toString(), icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'},
+                        {label: 'Awaiting Payment', value: awaitingPayment.toString(), icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z'},
+                        {label: 'Revenue', value: `₹${totalRevenue.toLocaleString()}`, icon: 'M9 12l2 2 4-4m5.618-4.618a11.955 11.955 0 010 16.97m-16.97 0a11.955 11.955 0 010-16.97m16.97 0L19.5 9m1.118-1.648L22 6m-1.382 1.352L19.5 9m-16.97 0L4.5 9m-1.118-1.648L2 6m1.382 1.352L4.5 9'}
                       ].map((stat, i) => (
                         <div key={i} className="bg-white rounded-3xl p-8 border border-beige shadow-soft flex flex-col justify-between h-44 relative overflow-hidden group">
                            <div className="w-10 h-10 rounded-xl bg-peach/10 flex items-center justify-center text-peach mb-4 group-hover:bg-peach group-hover:text-white transition-colors">
@@ -321,18 +365,22 @@ export default function AdminDashboard() {
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                        <div className="bg-white/70 backdrop-blur-xl rounded-[2.5rem] p-8 border border-white shadow-soft">
-                          <h3 className="text-xs font-bold text-brown uppercase tracking-widest mb-10 pb-4 border-b border-beige">Latest Enrollments</h3>
+                          <h3 className="text-xs font-bold text-brown uppercase tracking-widest mb-10 pb-4 border-b border-beige">Latest Booking Requests</h3>
                           <div className="space-y-6">
                              {enrollments.slice(0, 5).map((en) => (
                                 <div key={en._id} className="flex justify-between items-center group">
                                    <div className="flex items-center gap-4">
-                                      <div className="w-10 h-10 rounded-xl bg-peach/20 text-brown font-bold flex items-center justify-center text-xs border border-beige">{en.studentId?.name?.charAt(0)}</div>
+                                      <div className="w-10 h-10 rounded-xl bg-peach/20 text-brown font-bold flex items-center justify-center text-xs border border-beige">{(en.contactName || en.studentId?.name)?.charAt(0)}</div>
                                       <div>
-                                         <p className="font-bold text-brown text-sm">{en.studentId?.name}</p>
+                                         <p className="font-bold text-brown text-sm">{en.contactName || en.studentId?.name}</p>
                                          <p className="text-[10px] text-brown/40 uppercase tracking-widest">{new Date(en.enrolledAt).toLocaleDateString()}</p>
                                       </div>
                                    </div>
-                                   <span className="text-xs font-bold text-sage px-3 py-1 bg-sage/10 rounded-full">₹{en.classId?.price}</span>
+                                   <span className={`text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest ${
+                                     en.requestStatus === 'Confirmed' ? 'bg-sage/10 text-sage' :
+                                     en.requestStatus === 'Awaiting Payment' ? 'bg-peach/10 text-peach' :
+                                     'bg-beige text-brown/70'
+                                   }`}>{en.requestStatus || 'Pending Review'}</span>
                                 </div>
                              ))}
                           </div>
@@ -370,7 +418,10 @@ export default function AdminDashboard() {
                           <h4 className="font-bold text-brown text-lg mb-1">{cls.title}</h4>
                           <p className="text-xs text-brown/50 font-medium uppercase tracking-widest mb-6">{cls.chefName} • {cls.duration}</p>
                           <div className="flex items-center justify-between pt-4 border-t border-beige">
-                             <span className="font-bold text-sage text-xl">₹{cls.price}</span>
+                             <div>
+                                <p className="text-[10px] font-bold uppercase tracking-widest text-brown/35 mb-1">Internal Quote</p>
+                                <span className="font-bold text-sage text-xl">₹{cls.price}</span>
+                             </div>
                              <button onClick={() => handleDelete('class', cls._id)} className="text-[10px] font-bold text-red-400 hover:text-red-600 uppercase tracking-widest transition-colors">Delete</button>
                           </div>
                        </div>
@@ -410,34 +461,125 @@ export default function AdminDashboard() {
               )}
 
               {activeTab === 'payments' && (
-                 <div key="pay" className="bg-white/70 rounded-[2.5rem] overflow-hidden border border-beige shadow-soft">
-                    <table className="w-full text-left">
-                       <thead className="bg-beige/20 border-b border-beige">
-                          <tr>
-                             <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-brown/50">Student</th>
-                             <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-brown/50">Class</th>
-                             <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-brown/50">Amount</th>
-                             <th className="px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-brown/50">Status</th>
-                          </tr>
-                       </thead>
-                       <tbody className="divide-y divide-beige/40">
-                          {enrollments.map(en => (
-                             <tr key={en._id} className="hover:bg-white transition-colors">
-                                <td className="px-8 py-6">
-                                   <p className="font-bold text-brown text-sm">{en.studentId?.name}</p>
-                                   <p className="text-[10px] text-brown/40">{en.studentId?.email}</p>
-                                </td>
-                                <td className="px-8 py-6 text-sm text-brown/70 font-medium">{en.classId?.title}</td>
-                                <td className="px-8 py-6 font-bold text-brown text-sm">₹{en.classId?.price}</td>
-                                <td className="px-8 py-6">
-                                   <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${en.paymentStatus === 'Completed' ? 'bg-sage/10 text-sage' : 'bg-peach/10 text-peach'}`}>
-                                      {en.paymentStatus}
-                                   </span>
-                                </td>
-                             </tr>
-                          ))}
-                       </tbody>
-                    </table>
+                 <div key="pay" className="space-y-6">
+                    {enrollments.length === 0 && (
+                      <div className="bg-white/70 rounded-[2.5rem] p-16 border border-beige shadow-soft text-center">
+                        <p className="text-brown/40 text-sm">No booking requests yet.</p>
+                      </div>
+                    )}
+
+                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                      {enrollments.map((en) => {
+                        const draft = enrollmentDrafts[en._id] || {
+                          requestStatus: en.requestStatus || 'Pending Review',
+                          paymentStatus: en.paymentStatus || 'Pending',
+                          quotedPrice: en.quotedPrice ?? en.classId?.price ?? '',
+                          adminNotes: en.adminNotes || ''
+                        };
+
+                        return (
+                          <div key={en._id} className="bg-white/80 rounded-[2rem] border border-beige shadow-soft p-6 space-y-5">
+                            <div className="flex flex-wrap items-start justify-between gap-4">
+                              <div>
+                                <p className="font-bold text-brown text-lg">{en.contactName || en.studentId?.name}</p>
+                                <p className="text-xs text-brown/45">{en.contactEmail || en.studentId?.email}</p>
+                                <p className="text-xs text-brown/45 mt-1">{en.contactPhone || 'No mobile number shared'}</p>
+                              </div>
+                              <div className="flex flex-wrap gap-2">
+                                <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest bg-beige text-brown/70">
+                                  {draft.requestStatus}
+                                </span>
+                                <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${
+                                  draft.paymentStatus === 'Completed' ? 'bg-sage/10 text-sage' : 'bg-peach/10 text-peach'
+                                }`}>
+                                  {draft.paymentStatus}
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 gap-2 text-xs text-brown/60">
+                              <p><span className="font-bold text-brown/80">Class:</span> {en.classId?.title}</p>
+                              <p><span className="font-bold text-brown/80">Submitted By:</span> {en.contactName || en.studentId?.name}</p>
+                              <p><span className="font-bold text-brown/80">Email:</span> {en.contactEmail || en.studentId?.email}</p>
+                              <p><span className="font-bold text-brown/80">Mobile:</span> {en.contactPhone || 'Not shared'}</p>
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                              <div>
+                                <label className="block text-[10px] font-bold uppercase tracking-widest text-brown/40 mb-2">Request Status</label>
+                                <select
+                                  className="w-full px-4 py-3 rounded-2xl border border-beige bg-white/90 text-brown font-semibold"
+                                  value={draft.requestStatus}
+                                  onChange={(event) => handleEnrollmentDraftChange(en._id, 'requestStatus', event.target.value)}
+                                >
+                                  <option value="Pending Review">Pending Review</option>
+                                  <option value="Slot Proposed">Slot Proposed</option>
+                                  <option value="Awaiting Payment">Awaiting Payment</option>
+                                  <option value="Confirmed">Confirmed</option>
+                                  <option value="Cancelled">Cancelled</option>
+                                </select>
+                              </div>
+
+                              <div>
+                                <label className="block text-[10px] font-bold uppercase tracking-widest text-brown/40 mb-2">Payment Status</label>
+                                <select
+                                  className="w-full px-4 py-3 rounded-2xl border border-beige bg-white/90 text-brown font-semibold"
+                                  value={draft.paymentStatus}
+                                  onChange={(event) => handleEnrollmentDraftChange(en._id, 'paymentStatus', event.target.value)}
+                                >
+                                  <option value="Pending">Pending</option>
+                                  <option value="Completed">Completed</option>
+                                  <option value="Failed">Failed</option>
+                                </select>
+                              </div>
+                            </div>
+
+                            <div>
+                              <label className="block text-[10px] font-bold uppercase tracking-widest text-brown/40 mb-2">Quoted Fee</label>
+                              <input
+                                type="number"
+                                min="0"
+                                value={draft.quotedPrice}
+                                onChange={(event) => handleEnrollmentDraftChange(en._id, 'quotedPrice', event.target.value)}
+                                className="w-full px-4 py-3 rounded-2xl border border-beige bg-white/90 text-brown font-semibold"
+                                placeholder="Set fee after review"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block text-[10px] font-bold uppercase tracking-widest text-brown/40 mb-2">Admin Note</label>
+                              <textarea
+                                value={draft.adminNotes}
+                                onChange={(event) => handleEnrollmentDraftChange(en._id, 'adminNotes', event.target.value)}
+                                className="w-full min-h-[110px] px-4 py-3 rounded-2xl border border-beige bg-white/90 text-brown font-medium"
+                                placeholder="Example: Slot held for Saturday batch. Fee shared on call."
+                              />
+                            </div>
+
+                            <div className="flex flex-wrap gap-3">
+                              <button
+                                onClick={() => handleSaveEnrollment(en._id)}
+                                className="bg-brown text-white hover:bg-brown/80 px-5 py-3 rounded-2xl text-xs font-bold uppercase tracking-widest transition-colors"
+                              >
+                                Save Request
+                              </button>
+                              <button
+                                onClick={() => handleSaveEnrollment(en._id, 'Awaiting Payment')}
+                                className="bg-peach text-white hover:opacity-90 px-5 py-3 rounded-2xl text-xs font-bold uppercase tracking-widest transition-colors"
+                              >
+                                Mark Awaiting Payment
+                              </button>
+                              <button
+                                onClick={() => handleSaveEnrollment(en._id, 'Confirmed')}
+                                className="bg-sage text-white hover:opacity-90 px-5 py-3 rounded-2xl text-xs font-bold uppercase tracking-widest transition-colors"
+                              >
+                                Confirm Booking
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
                  </div>
               )}
 
