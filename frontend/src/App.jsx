@@ -20,7 +20,7 @@ import Maintenance from './pages/Maintenance';
 
 function App() {
   // Set to 'true' to show maintenance page, 'false' for normal site
-  const maintenanceMode = false;
+  const maintenanceMode = true;
 
   if (maintenanceMode) {
     return <Maintenance />;
