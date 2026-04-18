@@ -32,7 +32,7 @@ export default function Contact() {
                      </div>
                      <div>
                         <h4 className="font-bold text-brown text-lg">Contact Number</h4>
-                        <a href="+91 8956395162 \n+91 9175603240" className="text-brown/50 font-medium hover:text-sage transition-colors">poonamcookingclassess@gmail.com</a>
+                        <a href="+91 8956395162 \n+91 9175603240" className="text-brown/50 font-medium hover:text-sage transition-colors">+91 8956395162 \n+91 9175603240</a>
                      </div>
                   </div>
 
