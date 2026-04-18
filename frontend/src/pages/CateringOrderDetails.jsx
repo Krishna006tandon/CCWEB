@@ -110,12 +110,12 @@ export default function CateringOrderDetails() {
   }
 
   return (
-    <div className="min-h-screen bg-cream">
+    <div className="min-h-screen bg-cream overflow-x-hidden">
       <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-peach/10 rounded-full blur-[100px] -z-10"></div>
       
-      <div className="container mx-auto px-4 py-12 max-w-4xl">
+      <div className="container mx-auto px-4 py-8 sm:py-12 max-w-4xl">
         {/* Header */}
-        <div className="mb-8 flex items-center justify-between">
+        <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <button 
               onClick={() => navigate('/dashboard')}
@@ -126,7 +126,7 @@ export default function CateringOrderDetails() {
               </svg>
               Back to Dashboard
             </button>
-            <h1 className="text-3xl font-bold text-brown mb-2">Order Details</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-brown mb-2">Order Details</h1>
             <p className="text-brown/60">Order #{order.orderNumber}</p>
           </div>
           <span className={`px-4 py-2 rounded-full text-sm font-bold ${
@@ -148,23 +148,23 @@ export default function CateringOrderDetails() {
               Event Details
             </h3>
             <div className="space-y-3">
-              <div className="flex justify-between">
+              <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
                 <span className="text-brown/60">Event Type:</span>
                 <span className="font-semibold text-brown">{order.eventType}</span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
                 <span className="text-brown/60">Date:</span>
                 <span className="font-semibold text-brown">{new Date(order.eventDate).toLocaleDateString()}</span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
                 <span className="text-brown/60">Time:</span>
                 <span className="font-semibold text-brown">{order.eventTime}</span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
                 <span className="text-brown/60">Guests:</span>
                 <span className="font-semibold text-brown">{order.guestCount}</span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
                 <span className="text-brown/60">Serving Style:</span>
                 <span className="font-semibold text-brown">{order.servingStyle}</span>
               </div>
@@ -208,13 +208,13 @@ export default function CateringOrderDetails() {
           </h3>
           <div className="space-y-3">
             {order.items?.map((item, index) => (
-              <div key={index} className="flex items-center justify-between p-4 bg-cream/50 rounded-2xl">
-                <div className="flex items-center gap-3">
+              <div key={index} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 bg-cream/50 rounded-2xl">
+                <div className="flex items-center gap-3 min-w-0">
                   <span className="text-2xl">{item.isCustomItem ? '🥗' : '🍴'}</span>
                   <div>
                     <p className="font-semibold text-brown">{item.name}</p>
                     <p className="text-xs text-brown/60">
-                      {item.isCustomItem ? 'Custom Item' : 'Menu Item'} • {item.dietary}
+                      {item.isCustomItem ? 'Custom Item' : 'Menu Item'} | {item.dietary}
                     </p>
                     {item.customizations?.spiceLevel && (
                       <p className="text-xs text-brown/60">Spice Level: {item.customizations.spiceLevel}</p>
@@ -243,27 +243,27 @@ export default function CateringOrderDetails() {
               Pricing Details
             </h3>
             <div className="space-y-3">
-              <div className="flex justify-between">
+              <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
                 <span className="text-brown/60">Subtotal:</span>
                 <span className="font-semibold text-brown">₹{order.pricing.subtotal}</span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
                 <span className="text-brown/60">Service Charge (10%):</span>
                 <span className="font-semibold text-brown">₹{order.pricing.serviceCharge}</span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
                 <span className="text-brown/60">GST (18%):</span>
                 <span className="font-semibold text-brown">₹{order.pricing.tax}</span>
               </div>
-              <div className="border-t border-beige pt-3 flex justify-between">
+              <div className="border-t border-beige pt-3 flex flex-col sm:flex-row sm:justify-between gap-1">
                 <span className="font-bold text-brown">Total Amount:</span>
                 <span className="font-bold text-lg text-brown">₹{order.pricing.totalAmount}</span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
                 <span className="text-brown/60">Advance (50%):</span>
                 <span className="font-semibold text-brown">₹{order.pricing.advanceAmount}</span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
                 <span className="text-brown/60">Remaining:</span>
                 <span className="font-semibold text-brown">₹{order.pricing.remainingAmount}</span>
               </div>

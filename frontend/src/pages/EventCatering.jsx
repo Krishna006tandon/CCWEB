@@ -130,7 +130,7 @@ export default function EventCatering() {
             {/* Venue Details */}
             <div className="space-y-3 sm:space-y-4">
               <h3 className="text-base sm:text-lg font-semibold text-brown">Venue Details</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 <input 
                   type="text" 
                   placeholder="Venue Name"
@@ -183,7 +183,7 @@ export default function EventCatering() {
             {/* Custom Food Items */}
             <div className="space-y-3 sm:space-y-4">
               <h3 className="text-base sm:text-lg font-semibold text-brown">
-                Additional Custom Items 🥗 
+                Additional Custom Items
                 {selectedPackage && <span className="text-xs sm:text-sm font-normal text-brown/60 block sm:inline"> (Optional - Add extra items to your package)</span>}
               </h3>
               <p className="text-xs sm:text-sm text-brown/60 mb-3 sm:mb-4">
@@ -236,7 +236,7 @@ export default function EventCatering() {
                         <span className="font-medium text-sm sm:text-base">{item.name}</span>
                         <div className="flex flex-wrap gap-2 sm:gap-3 text-xs sm:text-sm">
                           <span className="text-brown/60">x {item.quantity}</span>
-                          <span className="text-green-600">🥗 {item.dietary}</span>
+                          <span className="text-green-600">{item.dietary}</span>
                         </div>
                       </div>
                       <button 

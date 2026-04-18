@@ -1,18 +1,18 @@
 export default function About() {
   return (
-    <div className="min-h-screen pt-24 bg-cream/30 px-6 lg:px-8">
+    <div className="min-h-screen pt-20 sm:pt-24 bg-cream/30 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
         {/* Story Section */}
-        <section className="flex flex-col lg:flex-row items-center gap-16 mb-32">
+        <section className="flex flex-col lg:flex-row items-center gap-10 sm:gap-16 mb-20 sm:mb-32">
           <div className="lg:w-1/2">
-            <h1 className="text-5xl font-bold text-brown mb-8 tracking-tight">Our Story</h1>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-brown mb-6 sm:mb-8 tracking-tight">Our Story</h1>
             {/* <div className="mb-8">
               ////<img src="/about-logo.png" alt="Poonam Cooking and Baking Classes Logo" className="w-full max-w-md mx-auto mb-6" />
             </div> */}
-            <p className="text-xl text-brown/70 font-light leading-relaxed mb-6">
+            <p className="text-base sm:text-xl text-brown/70 font-light leading-relaxed mb-6">
               Founded in 2026, Poonam Cooking and Baking Classes began with a simple mission: to bridge the gap between amateur home cooking and professional culinary artistry.
             </p>
-            <p className="text-lg text-brown/60 font-light leading-relaxed mb-8">
+            <p className="text-base sm:text-lg text-brown/60 font-light leading-relaxed mb-8">
               We believe that everyone has the potential to be a great chef. Our platform connects passionate food enthusiasts with experienced chefs through immersive, interactive online masterclasses.
             </p>
             <div className="bg-sage/10 rounded-2xl p-6 mt-8">
@@ -30,13 +30,13 @@ export default function About() {
         </section>
 
         {/* Philosophy Section */}
-        <section className="py-24 border-t border-beige/40">
-          <div className="text-center mb-20">
-            <h2 className="text-4xl font-bold text-brown mb-4 tracking-tight">Our Philosophy</h2>
+        <section className="py-16 sm:py-24 border-t border-beige/40">
+          <div className="text-center mb-12 sm:mb-20">
+            <h2 className="text-3xl sm:text-4xl font-bold text-brown mb-4 tracking-tight">Our Philosophy</h2>
             <div className="w-20 h-1.5 bg-sage mx-auto rounded-full"></div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-12">
             {[
               { title: "Accessibility", desc: "No matter your skill level, we break down complex techniques into simple, repeatable steps." },
               { title: "Quality", desc: "We only partner with the best chefs and suggest the highest quality ingredients and tools." },

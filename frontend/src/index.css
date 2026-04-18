@@ -16,8 +16,29 @@
 }
 
 @layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    overflow-x: hidden;
+  }
+
   body {
     @apply bg-cream text-brown antialiased selection:bg-sage selection:text-white;
+    overflow-x: hidden;
+    min-width: 320px;
+  }
+
+  #root {
+    min-height: 100vh;
+  }
+
+  img,
+  video,
+  canvas,
+  svg {
+    max-width: 100%;
   }
   
   /* Mobile-first responsive utilities */
@@ -132,5 +153,12 @@
   
   .group:hover .group-hover\:scale-105 {
     transform: scale(1);
+  }
+}
+
+@media (max-width: 640px) {
+  .mobile-stack-pair {
+    flex-direction: column;
+    align-items: stretch;
   }
 }

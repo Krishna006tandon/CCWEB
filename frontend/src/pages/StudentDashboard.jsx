@@ -76,13 +76,14 @@ export default function StudentDashboard() {
   ];
 
   return (
-    <div className="flex min-h-[90vh] bg-cream relative">
+    <div className="flex min-h-[90vh] bg-cream relative overflow-x-hidden">
       <div className="absolute top-0 right-0 w-[200px] sm:w-[300px] md:w-[400px] h-[200px] sm:h-[300px] md:h-[400px] bg-peach/10 rounded-full blur-[60px] sm:blur-[80px] md:blur-[100px] -z-10"></div>
       
       {/* Mobile Menu Button */}
       <button 
         onClick={toggleMobileMenu}
         className="lg:hidden fixed top-4 left-4 z-50 p-3 bg-white/95 backdrop-blur-xl rounded-2xl shadow-lg border border-beige/40"
+        aria-label={isMobileMenuOpen ? 'Close dashboard menu' : 'Open dashboard menu'}
       >
         <div className="w-8 h-8 rounded-full bg-peach flex items-center justify-center font-bold text-brown shadow-soft border-2 border-white text-sm">
           {user.name?.charAt(0)}
@@ -95,7 +96,7 @@ export default function StudentDashboard() {
       )}
       
       {/* Sidebar */}
-      <aside className={`${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 fixed lg:sticky top-0 left-0 w-72 h-full bg-white/98 backdrop-blur-3xl border-r border-beige/40 flex flex-col shadow-[4px_0_24px_-10px_rgba(107,79,58,0.05)] z-45 lg:z-auto transition-transform duration-300 ease-in-out pt-8 lg:pt-8`}>
+      <aside className={`${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 fixed lg:sticky top-0 left-0 w-[85vw] max-w-72 h-full bg-white/98 backdrop-blur-3xl border-r border-beige/40 flex flex-col shadow-[4px_0_24px_-10px_rgba(107,79,58,0.05)] z-45 lg:z-auto transition-transform duration-300 ease-in-out pt-8 lg:pt-8`}>
         
         <div className="px-8 mb-12 flex items-center gap-4">
            <div className="relative">
@@ -128,9 +129,9 @@ export default function StudentDashboard() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 p-4 sm:p-6 lg:p-14 overflow-y-auto z-10">
+      <main className="flex-1 p-4 pt-20 sm:p-6 sm:pt-24 lg:p-14 lg:pt-14 overflow-y-auto z-10 min-w-0">
         <div className="mb-8 sm:mb-14">
-           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-brown mb-2 tracking-tight">Welcome Back, {user.name?.split(' ')[0]}</h1>
+           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-brown mb-2 tracking-tight break-words">Welcome Back, {user.name?.split(' ')[0]}</h1>
            <p className="text-brown/60 text-base sm:text-lg font-light">Continue mastering your culinary journey.</p>
         </div>
 
@@ -142,7 +143,7 @@ export default function StudentDashboard() {
               >
                 <div className="grid grid-cols-1 xl:grid-cols-[1.1fr_1.4fr] gap-6 lg:gap-8">
                   <div className="glass-panel p-6 sm:p-8 bg-white/85">
-                    <div className="flex justify-between items-center mb-6">
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6">
                       <h3 className="text-xl text-brown font-bold flex items-center gap-3">
                         <span className="w-2.5 h-2.5 rounded-full bg-peach inline-block"></span>
                         Booking Requests
@@ -173,9 +174,9 @@ export default function StudentDashboard() {
                             </div>
                           )}
                           {request.quotedPrice ? (
-                            <div className="mt-4 flex items-center justify-between pt-4 border-t border-beige/50">
+                            <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pt-4 border-t border-beige/50">
                               <span className="text-[10px] font-bold uppercase tracking-[0.24em] text-brown/35">Shared Fee</span>
-                              <span className="text-lg font-bold text-sage">₹{request.quotedPrice}</span>
+                              <span className="text-lg font-bold text-sage">Rs. {request.quotedPrice}</span>
                             </div>
                           ) : (
                             <p className="mt-4 text-[11px] font-bold uppercase tracking-[0.22em] text-brown/35 pt-4 border-t border-beige/50">
@@ -212,7 +213,7 @@ export default function StudentDashboard() {
                       <div className="flex flex-col flex-grow">
                         <h3 className="text-base sm:text-lg font-bold text-brown mb-3 sm:mb-4 leading-tight line-clamp-2">{enroll.classId?.title}</h3>
                         <div className="mt-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-3 sm:pt-4 border-t border-beige/60">
-                           <span className="text-xl sm:text-2xl font-bold text-sage">&#8377;{enroll.quotedPrice || enroll.classId?.price}</span>
+                           <span className="text-xl sm:text-2xl font-bold text-sage">Rs. {enroll.quotedPrice || enroll.classId?.price}</span>
                            <button onClick={() => navigate(`/classes`)} className="bg-brown text-white hover:bg-brown/80 px-3 sm:px-4 py-2 rounded-full font-medium text-xs transition-colors shadow-sm text-center">
                              View Details
                            </button>

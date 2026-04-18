@@ -5,6 +5,7 @@ import { AnimatePresence } from 'framer-motion';
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [enrollments, setEnrollments] = useState([]);
   const [classes, setClasses] = useState([]);
   const [products, setProducts] = useState([]);
@@ -252,6 +253,11 @@ export default function AdminDashboard() {
     navigate('/login');
   };
 
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId);
+    setIsMobileSidebarOpen(false);
+  };
+
   const totalRevenue = enrollments
     .filter(en => en.paymentStatus === 'Completed')
     .reduce((acc, en) => acc + (en.quotedPrice || en.classId?.price || 0), 0);
@@ -280,11 +286,29 @@ export default function AdminDashboard() {
   const addableTabs = ['classes', 'products', 'notes', 'certificates'];
 
   return (
-    <div className="flex h-screen bg-cream relative overflow-hidden">
+    <div className="flex min-h-screen bg-cream relative overflow-x-hidden">
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-peach/10 rounded-full blur-[100px] -z-10 pointer-events-none"></div>
+
+      <button
+        onClick={() => setIsMobileSidebarOpen((current) => !current)}
+        className="lg:hidden fixed top-4 left-4 z-50 p-3 bg-white/95 backdrop-blur-xl rounded-2xl shadow-lg border border-beige/40"
+        aria-label={isMobileSidebarOpen ? 'Close admin menu' : 'Open admin menu'}
+      >
+        <svg className="w-6 h-6 text-brown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          {isMobileSidebarOpen ? (
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+          ) : (
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          )}
+        </svg>
+      </button>
+
+      {isMobileSidebarOpen && (
+        <div className="lg:hidden fixed inset-0 z-40 bg-brown/35 backdrop-blur-sm" onClick={() => setIsMobileSidebarOpen(false)} />
+      )}
       
       {/* Sidebar */}
-      <aside className="w-72 bg-white border-r border-beige shadow-[4px_0_24px_-10px_rgba(107,79,58,0.02)] flex flex-col pt-12 z-20 h-full">
+      <aside className={`${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 fixed lg:sticky top-0 left-0 w-[85vw] max-w-72 bg-white border-r border-beige shadow-[4px_0_24px_-10px_rgba(107,79,58,0.02)] flex flex-col pt-12 z-50 lg:z-20 h-screen transition-transform duration-300`}>
         <div className="px-8 mb-16 flex items-center justify-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-brown flex items-center justify-center shadow-lg shadow-brown/20 relative">
              <div className="w-8 h-8 rounded-lg border-2 border-white/20 absolute"></div>
@@ -298,7 +322,7 @@ export default function AdminDashboard() {
         
         <nav className="flex-1 px-5 space-y-1.5 overflow-y-auto">
           {tabs.map(tab => (
-            <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`w-full text-left px-5 py-4 rounded-2xl transition-all text-xs font-bold tracking-wider uppercase flex items-center gap-4 ${activeTab === tab.id ? 'bg-brown text-white shadow-xl shadow-brown/20 translate-x-2' : 'text-brown/50 hover:bg-beige/50 hover:text-brown'}`}>
+            <button key={tab.id} onClick={() => handleTabChange(tab.id)} className={`w-full text-left px-5 py-4 rounded-2xl transition-all text-xs font-bold tracking-wider uppercase flex items-center gap-4 ${activeTab === tab.id ? 'bg-brown text-white shadow-xl shadow-brown/20 translate-x-2' : 'text-brown/50 hover:bg-beige/50 hover:text-brown'}`}>
               <span className={`w-8 h-8 rounded-xl flex items-center justify-center shadow-inner-soft transition-colors ${activeTab === tab.id ? 'bg-white/10 text-white' : 'bg-white border border-beige/60 text-brown'}`}>
                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d={tab.icon}></path></svg>
               </span>
@@ -318,10 +342,10 @@ export default function AdminDashboard() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 p-8 lg:p-14 overflow-y-auto z-10 relative">
-        <header className="flex justify-between items-center mb-12 max-w-6xl mx-auto border-b border-beige/40 pb-8">
+      <main className="flex-1 p-4 pt-20 sm:p-6 sm:pt-24 lg:p-14 lg:pt-14 overflow-y-auto z-10 relative min-w-0">
+        <header className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8 sm:mb-12 max-w-6xl mx-auto border-b border-beige/40 pb-6 sm:pb-8">
            <div>
-              <h1 className="text-3xl font-bold text-brown mb-2 tracking-tight uppercase tracking-widest text-lg">{tabs.find(t => t.id === activeTab)?.label}</h1>
+              <h1 className="text-xl sm:text-3xl font-bold text-brown mb-2 tracking-tight uppercase tracking-widest">{tabs.find(t => t.id === activeTab)?.label}</h1>
               <p className="text-brown/50 font-medium text-sm italic">Mastering the Cookery culinary empire.</p>
            </div>
            {addableTabs.includes(activeTab) && (
@@ -331,7 +355,7 @@ export default function AdminDashboard() {
                   setTargetType(typeMap[activeTab]);
                   setIsAdding(true);
                 }} 
-                className="btn-primary !py-3 !text-xs !bg-sage border-none shadow-sage/20"
+                className="btn-primary !py-3 !text-xs !bg-sage border-none shadow-sage/20 w-full sm:w-auto text-center"
               >
                  + Add {activeTab === 'certificates' ? 'Certificate' : activeTab.slice(0, -1)}
               </button>
@@ -342,7 +366,7 @@ export default function AdminDashboard() {
            <AnimatePresence mode="wait">
               {activeTab === 'dashboard' && (
                  <div key="dash" className="space-y-12">
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                       {[
                         {label: 'Total Students', value: totalStudents.toString(), icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z'},
                         {label: 'Classes', value: classes.length.toString(), icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253'},
@@ -350,7 +374,7 @@ export default function AdminDashboard() {
                         {label: 'Awaiting Payment', value: awaitingPayment.toString(), icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z'},
                         {label: 'Revenue', value: `₹${totalRevenue.toLocaleString()}`, icon: 'M9 12l2 2 4-4m5.618-4.618a11.955 11.955 0 010 16.97m-16.97 0a11.955 11.955 0 010-16.97m16.97 0L19.5 9m1.118-1.648L22 6m-1.382 1.352L19.5 9m-16.97 0L4.5 9m-1.118-1.648L2 6m1.382 1.352L4.5 9'}
                       ].map((stat, i) => (
-                        <div key={i} className="bg-white rounded-3xl p-8 border border-beige shadow-soft flex flex-col justify-between h-44 relative overflow-hidden group">
+                        <div key={i} className="bg-white rounded-3xl p-5 sm:p-8 border border-beige shadow-soft flex flex-col justify-between min-h-40 sm:h-44 relative overflow-hidden group">
                            <div className="w-10 h-10 rounded-xl bg-peach/10 flex items-center justify-center text-peach mb-4 group-hover:bg-peach group-hover:text-white transition-colors">
                               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={stat.icon}></path></svg>
                            </div>
@@ -364,11 +388,11 @@ export default function AdminDashboard() {
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                       <div className="bg-white/70 backdrop-blur-xl rounded-[2.5rem] p-8 border border-white shadow-soft">
+                       <div className="bg-white/70 backdrop-blur-xl rounded-[2.5rem] p-5 sm:p-8 border border-white shadow-soft">
                           <h3 className="text-xs font-bold text-brown uppercase tracking-widest mb-10 pb-4 border-b border-beige">Latest Booking Requests</h3>
                           <div className="space-y-6">
                              {enrollments.slice(0, 5).map((en) => (
-                                <div key={en._id} className="flex justify-between items-center group">
+                                <div key={en._id} className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 group">
                                    <div className="flex items-center gap-4">
                                       <div className="w-10 h-10 rounded-xl bg-peach/20 text-brown font-bold flex items-center justify-center text-xs border border-beige">{(en.contactName || en.studentId?.name)?.charAt(0)}</div>
                                       <div>
@@ -386,11 +410,11 @@ export default function AdminDashboard() {
                           </div>
                        </div>
                        
-                       <div className="bg-white/70 backdrop-blur-xl rounded-[2.5rem] p-8 border border-white shadow-soft">
+                       <div className="bg-white/70 backdrop-blur-xl rounded-[2.5rem] p-5 sm:p-8 border border-white shadow-soft">
                           <h3 className="text-xs font-bold text-brown uppercase tracking-widest mb-10 pb-4 border-b border-beige">Inventory Status</h3>
                           <div className="space-y-6">
                              {products.slice(0, 5).map((p) => (
-                                <div key={p._id} className="flex justify-between items-center">
+                                <div key={p._id} className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
                                    <div className="flex items-center gap-4">
                                       <img src={p.image} className="w-10 h-10 rounded-xl object-cover border border-beige" alt={p.name} />
                                       <div>
@@ -408,7 +432,7 @@ export default function AdminDashboard() {
               )}
 
               {activeTab === 'classes' && (
-                 <div key="classes" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                 <div key="classes" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-8">
                     {classes.length === 0 && <p className="text-brown/40 col-span-3 text-center py-20">No classes yet. Click "+ Add class" to get started.</p>}
                     {classes.map(cls => (
                        <div key={cls._id} className="premium-card p-4 bg-white/60 group relative overflow-hidden">
@@ -417,7 +441,7 @@ export default function AdminDashboard() {
                           </div>
                           <h4 className="font-bold text-brown text-lg mb-1">{cls.title}</h4>
                           <p className="text-xs text-brown/50 font-medium uppercase tracking-widest mb-6">{cls.chefName} • {cls.duration}</p>
-                          <div className="flex items-center justify-between pt-4 border-t border-beige">
+                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-4 border-t border-beige">
                              <div>
                                 <p className="text-[10px] font-bold uppercase tracking-widest text-brown/35 mb-1">Internal Quote</p>
                                 <span className="font-bold text-sage text-xl">₹{cls.price}</span>
@@ -430,7 +454,7 @@ export default function AdminDashboard() {
               )}
 
               {activeTab === 'products' && (
-                 <div key="products" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                 <div key="products" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-8">
                     {products.length === 0 && <p className="text-brown/40 col-span-3 text-center py-20">No products yet. Click "+ Add product" to get started.</p>}
                     {products.map(p => (
                        <div key={p._id} className="premium-card p-6 bg-white/60 group">
@@ -440,7 +464,7 @@ export default function AdminDashboard() {
                           <div className="text-center">
                              <h4 className="font-bold text-brown mb-1">{p.name}</h4>
                              <p className="text-[10px] font-bold text-sage uppercase tracking-widest mb-6">{p.stock} units in stock</p>
-                             <div className="flex items-center justify-between pt-4 border-t border-beige">
+                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-4 border-t border-beige">
                                 <span className="font-bold text-brown underline decoration-peach decoration-2">₹{p.price}</span>
                                 <button onClick={() => handleDelete('product', p._id)} className="text-[10px] font-bold text-red-300 hover:text-red-500 uppercase tracking-widest">Remove</button>
                              </div>
@@ -478,7 +502,7 @@ export default function AdminDashboard() {
                         };
 
                         return (
-                          <div key={en._id} className="bg-white/80 rounded-[2rem] border border-beige shadow-soft p-6 space-y-5">
+                          <div key={en._id} className="bg-white/80 rounded-[2rem] border border-beige shadow-soft p-5 sm:p-6 space-y-5">
                             <div className="flex flex-wrap items-start justify-between gap-4">
                               <div>
                                 <p className="font-bold text-brown text-lg">{en.contactName || en.studentId?.name}</p>
@@ -593,8 +617,8 @@ export default function AdminDashboard() {
                     )}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                        {cateringOrders.map(order => (
-                          <div key={order._id} className="bg-white rounded-3xl p-6 border border-beige shadow-soft">
-                             <div className="flex items-center justify-between mb-4">
+                          <div key={order._id} className="bg-white rounded-3xl p-5 sm:p-6 border border-beige shadow-soft">
+                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
                                 <div className="w-12 h-12 rounded-2xl bg-green/10 flex items-center justify-center text-2xl mb-4">🍽️</div>
                                 <span className={`text-xs font-bold px-3 py-1 rounded-full ${
                                   order.status === 'Pending' ? 'bg-yellow/10 text-yellow' :
@@ -632,8 +656,8 @@ export default function AdminDashboard() {
                                 ))}
                                 {order.items?.length > 2 && <span className="text-brown/30">+{order.items.length - 2} more</span>}
                              </div>
-                             <div className="flex items-center justify-between pt-4 border-t border-beige">
-                                <div className="flex gap-2">
+                             <div className="flex flex-col gap-3 pt-4 border-t border-beige">
+                                <div className="flex flex-wrap gap-3">
                                   <button 
                                     onClick={() => handleViewOrderDetails(order)}
                                     className="text-xs font-bold text-sage uppercase tracking-widest hover:underline"
@@ -652,7 +676,7 @@ export default function AdminDashboard() {
                                 <select 
                                   value={order.status}
                                   onChange={(e) => handleUpdateOrderStatus(order._id, e.target.value)}
-                                  className="text-xs font-bold text-brown border border-beige rounded px-2 py-1"
+                                  className="text-xs font-bold text-brown border border-beige rounded px-2 py-2 w-full sm:w-auto"
                                 >
                                   <option value="pending">Pending</option>
                                   <option value="confirmed">Confirmed</option>
@@ -699,7 +723,7 @@ export default function AdminDashboard() {
            {isAdding && (
               <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-brown/40 backdrop-blur-sm" onClick={(e) => { if(e.target === e.currentTarget) { setIsAdding(false); resetForm(); } }}>
                  <div 
-                   className="glass-panel w-full max-w-2xl max-h-[90vh] overflow-y-auto p-10 relative"
+                  className="glass-panel w-full max-w-2xl max-h-[90vh] overflow-y-auto p-5 sm:p-10 relative"
                  >
                     <button onClick={() => { setIsAdding(false); resetForm(); }} className="absolute top-8 right-8 text-brown/20 hover:text-brown transition-colors">
                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -712,7 +736,7 @@ export default function AdminDashboard() {
 
                     <form onSubmit={handleSubmit} className="space-y-5">
                        {targetType === 'class' && (
-                          <div className="grid grid-cols-2 gap-4">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                              <div className="col-span-2"><input required placeholder="Class Title" className="input-field" value={formData.title} onChange={e=>setFormData({...formData, title:e.target.value})} /></div>
                              <input required placeholder="Duration (e.g. 2 hours)" className="input-field" value={formData.duration} onChange={e=>setFormData({...formData, duration:e.target.value})} />
                              <input required type="number" min="0" placeholder="Price (₹)" className="input-field" value={formData.price} onChange={e=>setFormData({...formData, price:e.target.value})} />
@@ -721,7 +745,7 @@ export default function AdminDashboard() {
                        )}
 
                        {targetType === 'product' && (
-                          <div className="grid grid-cols-2 gap-4">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                              <div className="col-span-2"><input required placeholder="Product Name" className="input-field" value={formData.name} onChange={e=>setFormData({...formData, name:e.target.value})} /></div>
                              <input required type="number" min="0" placeholder="Price (₹)" className="input-field" value={formData.price} onChange={e=>setFormData({...formData, price:e.target.value})} />
                              <input required type="number" min="0" placeholder="Stock Quantity" className="input-field" value={formData.stock} onChange={e=>setFormData({...formData, stock:e.target.value})} />
@@ -817,10 +841,10 @@ export default function AdminDashboard() {
             className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-brown/40 backdrop-blur-sm" 
             onClick={handleCloseOrderDetails}
           >
-            <div 
-              className="glass-panel w-full max-w-4xl max-h-[90vh] overflow-y-auto p-10 relative"
-              onClick={(e) => e.stopPropagation()}
-            >
+              <div 
+                className="glass-panel w-full max-w-4xl max-h-[90vh] overflow-y-auto p-5 sm:p-10 relative"
+                onClick={(e) => e.stopPropagation()}
+              >
               <button 
                 onClick={handleCloseOrderDetails}
                 className="absolute top-8 right-8 text-brown/20 hover:text-brown transition-colors"
@@ -834,26 +858,26 @@ export default function AdminDashboard() {
               
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                 {/* Event Details */}
-                <div className="bg-white/70 rounded-3xl p-6 border border-beige">
+                <div className="bg-white/70 rounded-3xl p-5 sm:p-6 border border-beige">
                   <h3 className="text-lg font-bold text-brown mb-4">Event Information</h3>
                   <div className="space-y-3">
-                    <div className="flex justify-between">
+                    <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
                       <span className="text-brown/60">Event Type:</span>
                       <span className="font-semibold">{selectedOrder.eventType}</span>
                     </div>
-                    <div className="flex justify-between">
+                    <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
                       <span className="text-brown/60">Date:</span>
                       <span className="font-semibold">{new Date(selectedOrder.eventDate).toLocaleDateString()}</span>
                     </div>
-                    <div className="flex justify-between">
+                    <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
                       <span className="text-brown/60">Time:</span>
                       <span className="font-semibold">{selectedOrder.eventTime}</span>
                     </div>
-                    <div className="flex justify-between">
+                    <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
                       <span className="text-brown/60">Guests:</span>
                       <span className="font-semibold">{selectedOrder.guestCount}</span>
                     </div>
-                    <div className="flex justify-between">
+                    <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
                       <span className="text-brown/60">Status:</span>
                       <span className={`font-semibold ${
                         selectedOrder.status === 'Pending' ? 'text-yellow' :
@@ -868,7 +892,7 @@ export default function AdminDashboard() {
 
                 {/* Customer & Venue */}
                 <div className="space-y-6">
-                  <div className="bg-white/70 rounded-3xl p-6 border border-beige">
+                  <div className="bg-white/70 rounded-3xl p-5 sm:p-6 border border-beige">
                     <h3 className="text-lg font-bold text-brown mb-4">Customer Information</h3>
                     <div className="space-y-2">
                       <p><span className="font-semibold">Name:</span> {selectedOrder.customerId?.name}</p>
@@ -876,7 +900,7 @@ export default function AdminDashboard() {
                     </div>
                   </div>
                   
-                  <div className="bg-white/70 rounded-3xl p-6 border border-beige">
+                  <div className="bg-white/70 rounded-3xl p-5 sm:p-6 border border-beige">
                     <h3 className="text-lg font-bold text-brown mb-4">Venue Details</h3>
                     <div className="space-y-2">
                       <p><span className="font-semibold">Venue:</span> {selectedOrder.venue?.name}</p>
@@ -888,12 +912,12 @@ export default function AdminDashboard() {
               </div>
 
               {/* Order Items */}
-              <div className="bg-white/70 rounded-3xl p-6 border border-beige mb-6">
+              <div className="bg-white/70 rounded-3xl p-5 sm:p-6 border border-beige mb-6">
                 <h3 className="text-lg font-bold text-brown mb-4">Order Items ({selectedOrder.items?.length || 0})</h3>
                 <div className="space-y-3">
                   {selectedOrder.items?.map((item, index) => (
-                    <div key={index} className="flex items-center justify-between p-4 bg-cream/50 rounded-2xl">
-                      <div className="flex items-center gap-3">
+                    <div key={index} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 bg-cream/50 rounded-2xl">
+                      <div className="flex items-center gap-3 min-w-0">
                         <span className="text-2xl">{item.isCustomItem ? '🥗' : '🍴'}</span>
                         <div>
                           <p className="font-semibold">{item.name}</p>
@@ -961,8 +985,8 @@ export default function AdminDashboard() {
             className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-brown/40 backdrop-blur-sm" 
             onClick={() => setShowPricingModal(false)}
           >
-            <div 
-              className="glass-panel w-full max-w-2xl p-8 relative"
+              <div 
+              className="glass-panel w-full max-w-2xl p-5 sm:p-8 relative"
               onClick={(e) => e.stopPropagation()}
             >
               <button 
@@ -978,7 +1002,7 @@ export default function AdminDashboard() {
               <p className="text-brown/60 mb-6">Order #{selectedOrder.orderNumber} - {selectedOrder.eventType}</p>
               
               <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-semibold text-brown mb-2">
                       Subtotal (Items Cost)
@@ -1005,7 +1029,7 @@ export default function AdminDashboard() {
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-semibold text-brown mb-2">
                       Total Amount
@@ -1058,7 +1082,7 @@ export default function AdminDashboard() {
                 </p>
               </div>
               
-              <div className="mt-6 flex gap-4">
+              <div className="mt-6 flex flex-col sm:flex-row gap-4">
                 <button
                   onClick={handleUpdatePricing}
                   className="flex-1 bg-brown text-white hover:bg-brown/80 px-6 py-4 rounded-2xl font-bold transition-all shadow-lg"

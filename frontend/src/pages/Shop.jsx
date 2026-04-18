@@ -26,11 +26,11 @@ export default function Shop() {
   );
 
   return (
-    <div className="min-h-screen py-20 px-6 lg:px-8 bg-cream/30">
+    <div className="min-h-screen py-12 sm:py-20 px-4 sm:px-6 lg:px-8 bg-cream/30">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-16">
-          <h1 className="text-5xl font-bold text-brown mb-6 tracking-tight">Culinary Shop</h1>
-          <p className="text-xl text-brown/60 font-light max-w-2xl mx-auto">
+        <div className="text-center mb-12 sm:mb-16">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-brown mb-6 tracking-tight">Culinary Shop</h1>
+          <p className="text-base sm:text-xl text-brown/60 font-light max-w-2xl mx-auto">
             Professional-grade kitchen essentials curated by our master chefs.
           </p>
         </div>
@@ -60,9 +60,9 @@ export default function Shop() {
                   {product.description}
                 </p>
                 
-                <div className="mt-auto flex items-center justify-between pt-5 border-t border-beige/60">
-                  <span className="text-2xl font-bold text-sage">₹{product.price}</span>
-                  <button className="bg-brown text-white hover:bg-brown/80 px-5 py-2.5 rounded-full font-medium text-xs transition-colors shadow-sm uppercase tracking-widest">
+                <div className="mt-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-5 border-t border-beige/60">
+                  <span className="text-2xl font-bold text-sage">Rs. {product.price}</span>
+                  <button className="bg-brown text-white hover:bg-brown/80 px-5 py-2.5 rounded-full font-medium text-xs transition-colors shadow-sm uppercase tracking-widest w-full sm:w-auto">
                     Add to Cart
                   </button>
                 </div>

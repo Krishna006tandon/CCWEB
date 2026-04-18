@@ -88,16 +88,16 @@ export default function Enrollment() {
   }
 
   return (
-    <div className="min-h-[85vh] py-24 px-6 flex justify-center items-center relative overflow-hidden">
+    <div className="min-h-[85vh] py-16 sm:py-24 px-4 sm:px-6 flex justify-center items-center relative overflow-hidden">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-peach/10 rounded-full blur-[120px] -z-10"></div>
 
-      <div className="glass-panel w-full max-w-5xl p-8 md:p-12 relative overflow-hidden backdrop-blur-2xl bg-white/60">
+      <div className="glass-panel w-full max-w-5xl p-5 sm:p-8 md:p-12 relative overflow-hidden backdrop-blur-2xl bg-white/60">
         <div className="grid grid-cols-1 lg:grid-cols-[1.05fr_1.3fr] gap-8 lg:gap-12">
           <div className="space-y-6">
             <div>
               <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-brown/40 mb-3">Booking Request</p>
-              <h2 className="text-4xl font-bold text-brown mb-4 tracking-tight">Share your preferred slot first</h2>
-              <p className="text-brown/60 text-lg font-light">
+              <h2 className="text-2xl sm:text-4xl font-bold text-brown mb-4 tracking-tight">Share your preferred slot first</h2>
+              <p className="text-brown/60 text-base sm:text-lg font-light">
                 This form only collects your contact details. Admin will reach out, confirm the slot, and share pricing after review.
               </p>
             </div>
@@ -108,15 +108,15 @@ export default function Enrollment() {
                   <img src={classData.image} alt={classData.title} className="w-full h-full object-cover" />
                 </div>
                 <div className="space-y-4">
-                  <div className="flex justify-between items-center">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
                     <span className="text-xs font-bold uppercase tracking-widest text-brown/40">Class Title</span>
                     <span className="font-bold text-brown text-right">{classData.title}</span>
                   </div>
-                  <div className="flex justify-between items-center">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
                     <span className="text-xs font-bold uppercase tracking-widest text-brown/40">Trainer</span>
                     <span className="font-medium text-brown/80">{classData.chefName}</span>
                   </div>
-                  <div className="flex justify-between items-center">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
                     <span className="text-xs font-bold uppercase tracking-widest text-brown/40">Duration</span>
                     <span className="font-medium text-brown/80">{classData.duration}</span>
                   </div>

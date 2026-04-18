@@ -38,13 +38,13 @@ export default function Classes() {
   }
 
   return (
-    <div className="min-h-screen py-16 px-6 lg:px-8 relative">
+    <div className="min-h-screen py-12 sm:py-16 px-4 sm:px-6 lg:px-8 relative">
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-peach/20 rounded-full blur-[100px] -z-10"></div>
 
       <div className="max-w-6xl mx-auto space-y-16">
         <section className="text-center">
-          <h1 className="text-5xl font-bold text-brown mb-6 tracking-tight">Class Booking Requests</h1>
-          <p className="text-xl text-brown/70 font-light max-w-3xl mx-auto">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-brown mb-6 tracking-tight">Class Booking Requests</h1>
+          <p className="text-base sm:text-xl text-brown/70 font-light max-w-3xl mx-auto">
             Explore our culinary classes and send a booking request first. Slot confirmation and pricing are shared only after admin review.
           </p>
 
@@ -84,11 +84,11 @@ export default function Classes() {
                   </p>
                 </div>
 
-                <div className="flex items-center justify-between pt-5 border-t border-beige/60">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-5 border-t border-beige/60">
                   <span className="text-xs font-bold uppercase tracking-[0.24em] text-brown/35">Price Shared After Confirmation</span>
                   <Link
                     to={`/enroll/${cls._id}`}
-                    className="bg-brown text-white hover:bg-brown/80 px-6 py-2.5 rounded-full font-medium text-sm transition-colors shadow-sm"
+                    className="bg-brown text-white hover:bg-brown/80 px-6 py-2.5 rounded-full font-medium text-sm transition-colors shadow-sm text-center"
                   >
                     Request Booking
                   </Link>
@@ -98,11 +98,11 @@ export default function Classes() {
           ))}
         </section>
 
-        <section className="glass-panel p-8 md:p-10 bg-white/75">
+        <section className="glass-panel p-5 sm:p-8 md:p-10 bg-white/75">
           <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-8">
             <div>
               <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-brown/40 mb-3">User to Admin Flow</p>
-              <h2 className="text-3xl font-bold text-brown">Booking happens in two stages</h2>
+              <h2 className="text-2xl sm:text-3xl font-bold text-brown">Booking happens in two stages</h2>
             </div>
             <p className="text-brown/60 max-w-2xl">
               The site collects intent and preferences first. Admin then validates availability and shares the final commercial details privately.

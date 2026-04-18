@@ -40,26 +40,26 @@ export default function Home() {
         <div className="absolute top-[40%] left-0 w-[600px] h-[600px] bg-sage/20 rounded-full blur-[100px] -z-10 -translate-x-1/2"></div>
 
         {/* Hero Section */}
-        <section className="min-h-[90vh] sm:min-h-[85vh] flex items-center justify-center relative overflow-hidden py-16 sm:py-24">
+        <section className="min-h-[90vh] sm:min-h-[85vh] flex items-center justify-center relative overflow-hidden py-14 sm:py-24">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex flex-col lg:flex-row items-center gap-8 lg:gap-16">
             <div className="lg:w-[55%] xl:w-[60%] z-10 text-center lg:text-left">
               <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full bg-white shadow-soft border border-beige mb-4 sm:mb-6">
                 <span className="w-2 h-2 rounded-full bg-sage animate-pulse"></span>
                 <span className="text-xs font-semibold tracking-wider text-brown uppercase">New Interactive Courses</span>
               </div>
-              <div className="flex items-start gap-6">
-                <div className="w-12 h-12 bg-white rounded-2xl shadow-soft flex items-center justify-center shrink-0">
+              <div className="flex flex-col sm:flex-row sm:flex-wrap items-start gap-4 sm:gap-6 mb-6 sm:mb-8">
+                <div className="w-12 h-12 bg-white rounded-2xl shadow-soft items-center justify-center shrink-0 hidden sm:flex">
                   <svg className="w-6 h-6 text-sage" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                 </div>
-                <div>
+                <div className="min-w-0">
                   <h4 className="font-bold text-brown text-lg">Email Us</h4>
-                  <a href="mailto:poonamcookingclassess@gmail.com" className="text-brown/50 font-medium hover:text-sage transition-colors">poonamcookingclassess@gmail.com</a>
+                  <a href="mailto:poonamcookingclassess@gmail.com" className="text-brown/50 font-medium hover:text-sage transition-colors break-all">poonamcookingclassess@gmail.com</a>
                 </div>
-                <div>
+                <div className="min-w-0">
                   <h4 className="font-bold text-brown text-lg">Contact Number</h4>
-                  <a href="+91 8956395162" className="text-brown/50 font-medium hover:text-sage transition-colors">+91 8956395162</a>
+                  <a href="tel:+918956395162" className="text-brown/50 font-medium hover:text-sage transition-colors block">+91 8956395162</a>
                   <br />
-                  <a href="+91 9175603240" className="text-brown/50 font-medium hover:text-sage transition-colors">+91 9175603240</a>
+                  <a href="tel:+919175603240" className="text-brown/50 font-medium hover:text-sage transition-colors block">+91 9175603240</a>
 
                 </div>
               </div>
@@ -83,7 +83,7 @@ export default function Home() {
               <div className="w-full aspect-[4/5] sm:aspect-[5/5] rounded-[2rem] sm:rounded-[3rem] overflow-hidden shadow-4x2 border-8 sm:border-12 border-white">
                 <img src="/logo.png" alt="Poonam Cooking and Baking Classes" className="w-full h-full object-cover" />
               </div>
-              <div className="absolute -bottom-4 -left-4 sm:-bottom-8 sm:-left-8 bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-xl border border-beige flex items-center gap-3 sm:gap-4">
+              <div className="absolute left-1/2 -translate-x-1/2 bottom-4 sm:left-auto sm:translate-x-0 sm:-bottom-8 sm:-left-8 bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-xl border border-beige flex items-center gap-3 sm:gap-4 w-[calc(100%-1.5rem)] sm:w-auto max-w-xs">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-sage/20 rounded-full flex items-center justify-center text-sage text-lg sm:text-2xl font-bold">50+</div>
                 <div>
                   <p className="font-bold text-brown text-sm sm:text-base">Premium Recipes</p>
@@ -126,7 +126,7 @@ export default function Home() {
                       <p className="text-sm text-brown/60 mb-4 sm:mb-6 leading-relaxed flex-grow line-clamp-2">{cls.description}</p>
 
                       <div className="flex items-center justify-between pt-3 sm:pt-4 border-t border-beige">
-                        <span className="text-xl sm:text-2xl font-bold text-sage">₹{cls.price}</span>
+                        <span className="text-xl sm:text-2xl font-bold text-sage">Rs. {cls.price}</span>
                         <Link to={`/enroll/${cls._id}`} className="bg-peach/50 text-brown hover:bg-peach px-4 sm:px-6 py-2 rounded-full font-medium text-xs sm:text-sm transition-colors">
                           Enroll Now
                         </Link>
@@ -159,7 +159,7 @@ export default function Home() {
                       <img src={p.image} alt={p.name} className="w-full h-full object-cover rounded-full mix-blend-multiply group-hover:scale-110 transition-transform duration-500" />
                     </div>
                     <h3 className="text-lg sm:text-xl font-bold text-brown mb-2">{p.name}</h3>
-                    <p className="text-sage font-bold text-base sm:text-lg mb-4 sm:mb-6">₹{p.price}</p>
+                    <p className="text-sage font-bold text-base sm:text-lg mb-4 sm:mb-6">Rs. {p.price}</p>
                     <Link to="/shop" className="w-full bg-transparent border border-brown text-brown hover:bg-brown hover:text-white transition-colors py-2 sm:py-2.5 rounded-full font-medium text-xs sm:text-sm text-center">
                       Shop Now
                     </Link>
@@ -187,7 +187,7 @@ export default function Home() {
                 <p className="text-cream/80 text-base sm:text-lg leading-relaxed font-light mb-6 sm:mb-8 italic">
                   "I passionately believe that cooking should be enjoyable, simple, and shared. Through these classes, my goal is to make professional culinary techniques accessible, so you can prepare extraordinary meals at home."
                 </p>
-                <p className="font-bold text-peach tracking-widest uppercase text-xs sm:text-sm">Poonam — Culinary Expert</p>
+                <p className="font-bold text-peach tracking-widest uppercase text-xs sm:text-sm">Poonam | Culinary Expert</p>
               </div>
             </div>
           </div>
