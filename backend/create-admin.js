@@ -28,10 +28,6 @@ async function createAdmin() {
       verified: true
     };
 
-    // Hash password
-    const salt = await bcrypt.genSalt(10);
-    adminData.password = await bcrypt.hash(adminData.password, salt);
-
     // Save admin
     const admin = new User(adminData);
     await admin.save();
