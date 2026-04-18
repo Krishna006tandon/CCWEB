@@ -2,13 +2,13 @@ const Joi = require('joi');
 
 const registerSchema = Joi.object({
     name: Joi.string().required().min(2),
-    email: Joi.string().email().required(),
+    email: Joi.string().email().required().lowercase().trim(),
     password: Joi.string().required().min(6),
     role: Joi.string().valid('student', 'admin').default('student')
 });
 
 const loginSchema = Joi.object({
-    email: Joi.string().email().required(),
+    email: Joi.string().email().required().lowercase().trim(),
     password: Joi.string().required()
 });
 

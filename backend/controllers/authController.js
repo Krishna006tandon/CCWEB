@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -9,7 +10,8 @@ const generateToken = (id) => {
 
 exports.registerUser = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    let { name, email, password, role } = req.body;
+    email = email.toLowerCase().trim();
 
     const userExists = await User.findOne({ email });
     if (userExists) {
@@ -41,12 +43,15 @@ exports.registerUser = async (req, res) => {
 
 exports.loginUser = async (req, res) => {
   try {
-    const { email, password } = req.body;
-    console.log(`Login attempt for: ${email}`);
+    let { email, password } = req.body;
+    email = email.toLowerCase().trim();
+    console.log(`Login attempt for: "${email}"`);
+    console.log(`Searching in collection: ${User.collection.name}`);
+    console.log(`Database connection state: ${mongoose.connection.readyState}`);
 
     const user = await User.findOne({ email });
     if (!user) {
-      console.log('User not found');
+      console.log(`User not found for email: "${email}" in ${mongoose.connection.db?.databaseName || 'unknown db'}`);
     }
 
     if (user && (await user.matchPassword(password))) {
